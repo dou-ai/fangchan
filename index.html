@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>贝壳广州站 · 房产视频运营全景方案</title>
+<style>
+:root{
+  --bg0:#05080f; --bg1:#0a1020; --bg2:#0e1730;
+  --panel:rgba(16,24,46,.72); --panel2:rgba(10,16,32,.86);
+  --line:rgba(140,162,214,.16); --line2:rgba(140,162,214,.30);
+  --gold:#e3b96b; --gold2:#f4d79b; --cyan:#4fd6c3; --blue:#8ba7ff; --pink:#ff9d9d;
+  --ink:#e9edf7; --muted:#8b96ad; --dim:#5d687f;
+  --serif:"Songti SC","Noto Serif SC","STSong","SimSun",serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Heiti SC",sans-serif;
+  --num:Georgia,"Times New Roman",var(--serif);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg0); color:var(--ink); font-family:var(--sans);
+  min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:""; position:fixed; inset:0; z-index:-2;
+  background:
+    radial-gradient(1200px 700px at 78% -8%, rgba(58,84,150,.20), transparent 60%),
+    radial-gradient(900px 600px at -10% 12%, rgba(32,74,84,.18), transparent 60%),
+    radial-gradient(700px 500px at 110% 90%, rgba(120,84,40,.14), transparent 60%),
+    linear-gradient(180deg,#070c18 0%, #05080f 100%);
+}
+.grain{
+  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.9'/%3E%3C/svg%3E");
+}
+#particleCanvas{position:fixed; inset:0; z-index:-1; pointer-events:none}
+
+/* ---------- top bar ---------- */
+#topbar{
+  position:fixed; top:0; left:0; right:0; z-index:50;
+  display:flex; align-items:center; gap:28px; padding:14px 36px;
+  background:linear-gradient(180deg, rgba(5,8,15,.92), rgba(5,8,15,.55) 78%, transparent);
+  border-bottom:1px solid transparent; transition:border-color .3s, background .3s;
+}
+#topbar.scrolled{border-bottom:1px solid var(--line); background:rgba(5,8,15,.86); backdrop-filter:blur(14px)}
+.brand{display:flex; align-items:center; gap:12px; flex:none}
+.brand .logo{
+  width:38px;height:38px;border-radius:11px; flex:none;
+  background:linear-gradient(140deg,#e3b96b,#8a6a2c);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-weight:700;color:#141008;font-size:15px;
+  box-shadow:0 6px 22px rgba(227,185,107,.35);
+}
+.brand .t1{font-family:var(--serif);font-size:16px;letter-spacing:2px;color:#fff}
+.brand .t2{font-size:10.5px;color:var(--muted);letter-spacing:3px;margin-top:2px}
+.brand .badge{
+  margin-left:6px;font-size:9.5px;letter-spacing:2px;color:var(--gold2);
+  border:1px solid rgba(227,185,107,.45);border-radius:999px;padding:2px 9px;
+}
+.tabs{display:flex; gap:6px; margin-left:auto; align-items:center; flex-wrap:wrap}
+.tab{
+  position:relative; border:none; cursor:pointer; color:var(--muted);
+  background:transparent; font-family:var(--sans); font-size:13.5px; letter-spacing:2px;
+  padding:9px 18px; border-radius:10px; transition:color .25s, background .25s;
+}
+.tab::after{
+  content:""; position:absolute; left:50%; bottom:4px; transform:translateX(-50%) scaleX(0);
+  width:60%; height:2px; border-radius:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transition:transform .3s cubic-bezier(.22,.9,.35,1);
+}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--gold2); background:rgba(227,185,107,.08)}
+.tab.active::after{transform:translateX(-50%) scaleX(1)}
+
+/* ---------- layout ---------- */
+main{position:relative; z-index:2; max-width:1280px; margin:0 auto; padding:104px 28px 40px}
+.panel{display:none}
+.panel.active{display:block; animation:panelIn .65s cubic-bezier(.22,.9,.35,1) both}
+@keyframes panelIn{from{opacity:0; transform:translateY(26px)} to{opacity:1; transform:none}}
+
+.card{
+  position:relative; background:var(--panel); border:1px solid var(--line); border-radius:18px;
+  backdrop-filter:blur(10px); overflow:hidden;
+}
+.card.glass{background:linear-gradient(160deg, rgba(20,30,56,.80), rgba(10,16,32,.86))}
+.card .glow{
+  position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background:radial-gradient(600px 220px at 20% 0%, rgba(80,120,220,.10), transparent 60%);
+}
+.panel.active .card{animation:cardIn .6s cubic-bezier(.22,.9,.35,1) both; animation-delay:calc(var(--i,0)*75ms)}
+@keyframes cardIn{from{opacity:0; transform:translateY(22px) scale(.985)} to{opacity:1; transform:none}}
+@keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes growY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes dash{to{stroke-dashoffset:0}}
+@keyframes dashArc{to{stroke-dashoffset:0}}
+.panel.active .delay-1{animation-delay:calc(var(--i,0)*75ms + 120ms)}
+
+.sec{position:relative; margin-bottom:44px}
+.sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:20px; position:relative}
+.sec-head .idx{
+  font-family:var(--num); font-size:15px; color:var(--gold); letter-spacing:1px; flex:none;
+}
+.sec-head h2{font-family:var(--serif); font-size:25px; font-weight:700; letter-spacing:4px; color:#f4f7ff}
+.sec-head .en{font-family:var(--num); font-size:11px; color:var(--dim); letter-spacing:4px; text-transform:uppercase}
+.sec-head .rule{flex:1; height:1px; margin:0 6px; background:linear-gradient(90deg,var(--line2),transparent)}
+.sec-head .sub{font-size:12.5px; color:var(--muted)}
+
+/* hero */
+.hero{display:grid; grid-template-columns:1.15fr .85fr; gap:22px; align-items:stretch}
+.hero .lead{padding:44px 44px 36px}
+.hero .kicker{display:inline-flex; align-items:center; gap:8px; font-size:11px; letter-spacing:4px; color:var(--gold2); border:1px solid rgba(227,185,107,.35); border-radius:999px; padding:5px 14px; margin-bottom:22px}
+.hero h1{font-family:var(--serif); font-size:44px; line-height:1.3; letter-spacing:6px; color:#fff; font-weight:700}
+.hero h1 em{font-style:normal; color:var(--gold); text-shadow:0 0 30px rgba(227,185,107,.35)}
+.hero .tagline{margin-top:16px; color:var(--muted); font-size:14px; letter-spacing:2px; line-height:2}
+.hero .tagline b{color:var(--cyan); font-weight:600}
+.hero .visual{position:relative; min-height:420px; border-radius:18px; overflow:hidden}
+.hero .visual img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scale(1.02)}
+.hero .visual .veil{position:absolute; inset:0; background:linear-gradient(200deg, rgba(5,8,15,.15) 30%, rgba(5,8,15,.72) 100%)}
+.hero .visual .cap{position:absolute; left:22px; bottom:18px; color:#dfe6f5; font-size:12px; letter-spacing:2px; text-shadow:0 2px 12px rgba(0,0,0,.6)}
+
+/* KPI */
+.kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:22px}
+.kpi{padding:22px 24px; position:relative}
+.kpi .v{font-family:var(--num); font-size:38px; font-weight:700; line-height:1; color:#fff}
+.kpi .v small{font-size:16px; color:var(--muted); font-weight:400; margin-left:2px}
+.kpi.gold .v{color:var(--gold2)}
+.kpi.cyan .v{color:var(--cyan)}
+.kpi .k{font-size:12px; color:var(--muted); letter-spacing:2px; margin-top:10px}
+.kpi .bar{position:absolute; left:24px; right:24px; bottom:0; height:2px; background:linear-gradient(90deg,var(--gold),transparent); opacity:.5}
+.kpi .ic{position:absolute; right:18px; top:16px; opacity:.55}
+
+/* charts grid */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:22px}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:22px}
+.grid23{display:grid; grid-template-columns:1.35fr 1fr; gap:22px}
+.chart-box{padding:24px 24px 18px}
+.chart-title{font-family:var(--serif); font-size:16px; letter-spacing:2px; color:#e6ebf7; display:flex; align-items:center; gap:10px; margin-bottom:6px}
+.chart-title::before{content:""; width:6px; height:16px; border-radius:2px; background:linear-gradient(180deg,var(--gold),#8a6a2c)}
+.chart-sub{font-size:11px; color:var(--dim); letter-spacing:1px; margin-bottom:10px}
+.svgwrap{width:100%}
+.svgwrap svg{width:100%; height:auto; display:block}
+
+/* portfolio */
+.chips{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px}
+.chip{
+  border:1px solid var(--line); color:var(--muted); background:rgba(20,30,56,.4);
+  font-size:12px; letter-spacing:1px; padding:7px 16px; border-radius:999px; cursor:pointer; transition:all .25s;
+}
+.chip:hover{color:var(--ink); border-color:var(--line2)}
+.chip.active{color:#141008; background:linear-gradient(140deg,#f4d79b,#d9a94f); border-color:transparent; font-weight:600}
+.pf-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; margin-top:20px}
+.work-thumb{background:var(--card); border:1px solid var(--border); border-radius:8px; overflow:hidden; transition:all .3s; cursor:pointer; text-decoration:none; color:inherit; display:block}
+.work-thumb:hover{border-color:var(--gold); transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.work-thumb .thumb{position:relative; aspect-ratio:9/16; overflow:hidden; background:linear-gradient(135deg,#1a2028 0%,#0d1116 60%,#12171d 100%)}
+.work-thumb .thumb::before{content:''; position:absolute; inset:0; z-index:0; background:radial-gradient(circle at 78% 22%,rgba(227,185,107,.18),transparent 45%),radial-gradient(circle at 20% 80%,rgba(227,185,107,.08),transparent 50%)}
+.work-thumb .thumb::after{content:''; position:absolute; top:0; right:0; width:60px; height:60px; z-index:0; background:linear-gradient(225deg,rgba(227,185,107,.25),transparent 70%); clip-path:polygon(100% 0,0 0,100% 100%)}
+.work-thumb .thumb-img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; transition:transform .5s ease,filter .3s ease; filter:brightness(.92)}
+.work-thumb:hover .thumb-img{transform:scale(1.05); filter:brightness(1)}
+.work-thumb .varea{position:absolute; top:10px; left:10px; z-index:1; font-size:10px; color:#f0d9a0; letter-spacing:1px; padding:3px 8px; background:rgba(0,0,0,.6); border-radius:3px; border:1px solid rgba(227,185,107,.4)}
+.work-thumb .vname{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1; text-align:center; width:90%}
+.work-thumb .vname-zh{font-size:26px; font-weight:800; color:#f0d9a0; letter-spacing:1px; line-height:1.15; text-shadow:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(227,185,107,.3)}
+.work-thumb .vname-en{font-size:9px; color:rgba(227,185,107,.5); letter-spacing:3px; margin-top:8px; text-transform:uppercase}
+.work-thumb .vplay-badge{position:absolute; bottom:10px; right:10px; z-index:1; display:flex; align-items:center; gap:5px; font-size:11px; color:var(--gold); font-weight:600; background:rgba(0,0,0,.6); padding:3px 8px; border-radius:4px}
+.work-thumb .vplay-badge .dot{width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 8px var(--gold); animation:pfPulse 1.6s ease-in-out infinite}
+.work-thumb .thumb-info{padding:10px 12px; font-size:12px; color:#6b7480; display:flex; justify-content:space-between; gap:8px}
+.work-thumb .thumb-info .play{color:var(--gold); font-weight:600}
+.work-thumb .thumb-info .date{color:#6b7480}
+.work-thumb .thumb-frame-img{background:#0d1116}
+.work-thumb .thumb-frame-img.img-fail{background:linear-gradient(135deg,#1a2028 0%,#0d1116 60%,#12171d 100%)}
+.work-thumb .thumb-frame-img.img-fail::after{content:'点击上传封面'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#f0d9a0; font-size:13px; z-index:1; border:2px dashed rgba(227,185,107,.3); margin:10px; border-radius:6px}
+.work-thumb .thumb{cursor:pointer}
+.work-thumb .thumb .upload-hint{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2; color:#f0d9a0; font-size:12px; text-align:center; opacity:0; transition:opacity .3s; pointer-events:none; background:rgba(0,0,0,.7); padding:8px 14px; border-radius:6px; border:1px solid rgba(227,185,107,.3)}
+.work-thumb:hover .thumb .upload-hint{opacity:1}
+.work-thumb .thumb input[type=file]{display:none}
+@keyframes pfPulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* static image upload */
+img[data-upload]{cursor:pointer}
+.upl-hint{position:absolute; top:12px; right:12px; z-index:5; font-size:11px; color:var(--gold2); background:rgba(0,0,0,.68); border:1px solid rgba(227,185,107,.4); padding:5px 12px; border-radius:999px; letter-spacing:1px; opacity:0; transition:opacity .3s; pointer-events:none; backdrop-filter:blur(4px)}
+.fig:hover .upl-hint,.visual:hover .upl-hint{opacity:1}
+
+/* benchmark */
+.bm-hero{display:grid; grid-template-columns:.92fr 1.08fr; gap:22px}
+.bm-hero .fig{height:420px}
+.fig{border-radius:16px; overflow:hidden; position:relative; background:#0c1428}
+.fig img{width:100%; height:100%; object-fit:cover; display:block}
+.fig .tag{position:absolute; left:14px; bottom:14px; font-size:11px; letter-spacing:2px; color:#eef2fc; background:rgba(5,8,15,.6); border:1px solid rgba(255,255,255,.16); padding:4px 12px; border-radius:999px; backdrop-filter:blur(6px)}
+.grid3 .fig{height:280px}
+.grid2 .fig{height:320px}
+.grid3 .fig img,.grid2 .fig img{width:100%; height:100%; object-fit:cover}
+.chips-gold{display:flex; flex-wrap:wrap; gap:9px; margin-top:16px}
+.chips-gold span{
+  font-size:12px; color:var(--gold2); border:1px solid rgba(227,185,107,.38); background:rgba(227,185,107,.07);
+  padding:6px 14px; border-radius:999px; letter-spacing:1px;
+}
+.stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:20px}
+.stat{padding:18px 20px}
+.stat .v{font-family:var(--num); font-size:30px; font-weight:700; color:var(--gold2)}
+.stat .v small{font-size:14px; color:var(--muted)}
+.stat .k{font-size:11.5px; color:var(--muted); letter-spacing:1px; margin-top:8px}
+.flow{display:flex; align-items:center; gap:0; flex-wrap:wrap}
+.flow .node{
+  flex:1; min-width:150px; padding:16px 14px; border-radius:14px; text-align:center;
+  background:linear-gradient(165deg, rgba(24,36,68,.85), rgba(12,18,36,.85)); border:1px solid var(--line);
+}
+.flow .node .n{font-family:var(--serif); font-size:15px; letter-spacing:1px; color:#eef2fc}
+.flow .node .d{font-size:10.5px; color:var(--muted); margin-top:6px; line-height:1.7}
+.flow .node .ic{display:block; margin:0 auto 8px; opacity:.9}
+.flow .arrow{flex:none; color:var(--gold); font-size:18px; padding:0 8px; font-family:var(--num)}
+
+/* pipeline */
+.pipe{display:flex; gap:0; align-items:stretch; flex-wrap:wrap}
+.pipe .step{flex:1; min-width:110px; position:relative; padding:16px 10px 14px; text-align:center; background:rgba(16,24,46,.6); border:1px solid var(--line); border-radius:12px; margin:0 6px}
+.pipe .step .s{font-family:var(--num); font-size:12px; color:var(--gold); display:block; margin-bottom:6px}
+.pipe .step .t{font-size:12.5px; letter-spacing:1px; color:#e8edf8}
+.pipe .step .d{font-size:10px; color:var(--dim); margin-top:5px; line-height:1.6}
+.pipe .step::after{content:"→"; position:absolute; right:-11px; top:50%; transform:translateY(-50%); color:var(--gold); font-size:14px}
+.pipe .step:last-child::after{content:""}
+
+/* asset nodes */
+.asset-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+.asset{padding:22px 22px 18px; position:relative; overflow:hidden}
+.asset::before{content:""; position:absolute; right:-40px; top:-40px; width:130px; height:130px; border-radius:50%; opacity:.12; filter:blur(6px)}
+.asset.a-gold::before{background:var(--gold)} .asset.a-cyan::before{background:var(--cyan)}
+.asset.a-blue::before{background:var(--blue)} .asset.a-pink::before{background:var(--pink)}
+.asset .ic{width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; background:rgba(227,185,107,.1); border:1px solid rgba(227,185,107,.25)}
+.asset h3{font-family:var(--serif); font-size:17px; letter-spacing:2px; color:#f2f5fc; display:flex; align-items:baseline; gap:10px}
+.asset h3 .cnt{font-family:var(--num); font-size:22px; color:var(--gold2)}
+.asset .d{font-size:12px; color:var(--muted); line-height:1.9; margin-top:10px}
+.asset .map{font-size:11.5px; color:var(--cyan); margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); line-height:1.8}
+.asset .map b{color:var(--gold2); font-weight:600}
+
+/* table */
+.map-table{width:100%; border-collapse:collapse; font-size:13px}
+.map-table th{font-size:11.5px; letter-spacing:2px; color:var(--gold2); text-align:left; padding:12px 16px; border-bottom:1px solid var(--line2); font-weight:600}
+.map-table td{padding:13px 16px; border-bottom:1px solid var(--line); color:#d9e0ee; vertical-align:top}
+.map-table td:first-child{color:#fff; font-weight:600; white-space:nowrap}
+.map-table td .fm{color:var(--gold); font-family:var(--num)}
+.map-table td .to{color:var(--cyan)}
+.map-table tr:hover td{background:rgba(227,185,107,.04)}
+
+/* insights */
+.insight{position:relative; padding:24px 24px 22px}
+.insight .no{font-family:var(--num); font-size:13px; color:var(--gold); letter-spacing:2px}
+.insight h3{font-family:var(--serif); font-size:16px; letter-spacing:1px; margin:10px 0 8px; color:#f2f5fc}
+.insight p{font-size:12.5px; color:var(--muted); line-height:2}
+.insight .seal{position:absolute; right:16px; top:16px; width:26px;height:26px; opacity:.5}
+
+/* ai strip */
+.ai-strip{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+.ai-item{border-radius:14px; overflow:hidden; background:#0c1428; border:1px solid var(--line); position:relative}
+.ai-item img{width:100%; height:96px; object-fit:cover; display:block; cursor:pointer}
+.ai-item .upload-hint{position:absolute; top:6px; right:6px; z-index:3; font-size:10px; color:#f0d9a0; background:rgba(0,0,0,.7); border:1px solid rgba(227,185,107,.35); padding:3px 8px; border-radius:999px; opacity:0; transition:opacity .3s; pointer-events:none}
+.ai-item:hover .upload-hint{opacity:1}
+.ai-item .cap{padding:10px 12px; font-size:11.5px; color:#cfd8ea}
+.ai-item .cap b{color:var(--cyan); font-family:var(--num)}
+.ai-item .cap .p{color:var(--muted); font-size:10.5px; margin-top:3px}
+
+/* path steps */
+.path{display:flex; flex-wrap:wrap; gap:0; margin-top:8px}
+.path .ps{flex:1; min-width:130px; position:relative; text-align:center; padding:18px 12px}
+.path .ps .dot{width:34px; height:34px; margin:0 auto 10px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(227,185,107,.5); color:var(--gold2); font-family:var(--num); font-size:13px; background:rgba(227,185,107,.08)}
+.path .ps .t{font-size:13px; letter-spacing:1px; color:#e8edf8}
+.path .ps .d{font-size:10.5px; color:var(--dim); margin-top:6px; line-height:1.7}
+.path .ps:not(:last-child)::after{content:"→"; position:absolute; right:-8px; top:24px; color:var(--gold); font-size:16px}
+
+/* monetization grid */
+.monet-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+.monet{padding:22px 22px 18px; position:relative; overflow:hidden}
+.monet .ic{width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; background:rgba(227,185,107,.1); border:1px solid rgba(227,185,107,.25)}
+.monet .ic svg{display:block}
+.monet .t{font-family:var(--serif); font-size:17px; letter-spacing:2px; color:#f2f5fc}
+.monet .d{font-size:12.5px; color:var(--muted); line-height:1.8; margin-top:8px}
+.monet .tag2{position:absolute; top:16px; right:16px; font-size:10px; color:var(--gold2); border:1px solid rgba(227,185,107,.35); background:rgba(227,185,107,.07); border-radius:999px; padding:2px 10px; letter-spacing:1px}
+.monet::after{content:""; position:absolute; right:-34px; top:-34px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(227,185,107,.14), transparent 70%); pointer-events:none}
+
+/* footer */
+footer{padding:26px 36px 40px; text-align:center; color:var(--dim); font-size:11px; letter-spacing:2px; position:relative; z-index:2}
+footer .ln{border-top:1px solid var(--line); max-width:1280px; margin:0 auto 20px}
+
+.scroll-progress{position:fixed; top:0; left:0; height:2px; width:0%; z-index:60; background:linear-gradient(90deg,var(--gold),var(--cyan)); box-shadow:0 0 12px rgba(227,185,107,.5)}
+
+/* small */
+.tip{font-size:11px; color:var(--dim); letter-spacing:1px}
+.bm-cols{display:grid; grid-template-columns:1fr 1fr; gap:22px}
+.divider{height:1px; background:linear-gradient(90deg,transparent,var(--line2),transparent); margin:34px 0}
+
+@media (max-width:1080px){
+  .hero,.bm-hero{grid-template-columns:1fr}
+  .grid2,.grid23,.bm-cols{grid-template-columns:1fr}
+  .grid3,.asset-grid,.kpis,.monet-grid{grid-template-columns:1fr 1fr}
+  .pf-grid{grid-template-columns:1fr 1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .ai-strip{grid-template-columns:repeat(2,1fr)}
+  #topbar{flex-wrap:wrap; gap:10px; padding:12px 18px}
+  .tabs{margin-left:0}
+}
+@media (max-width:640px){
+  .grid3,.asset-grid,.pf-grid,.kpis,.monet-grid{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .hero h1{font-size:30px}
+}
+</style>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProg"></div>
+<canvas id="particleCanvas"></canvas>
+<div class="grain"></div>
+
+<header id="topbar">
+  <div class="brand">
+    <div class="logo">贝</div>
+    <div>
+      <div class="t1">贝壳·广州站</div>
+      <div class="t2">视频运营中心</div>
+    </div>
+    <span class="badge">集团汇报</span>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="overview">运营总览</button>
+    <button class="tab" data-tab="assets">资产库</button>
+    <button class="tab" data-tab="portfolio">作品集</button>
+    <button class="tab" data-tab="benchmark">AI视频行业标杆</button>
+    <button class="tab" data-tab="model">资产运营</button>
+  </nav>
+</header>
+
+<main>
+<!-- ================= 01 运营总览 ================= -->
+<section class="panel active" id="panel-overview">
+  <div class="hero">
+    <div class="card lead" style="--i:0">
+      <div class="glow"></div>
+      <span class="kicker">KE · REAL ESTATE VIDEO OPERATIONS</span>
+      <h1>房产视频运营<br>全景方案<em>·2026</em></h1>
+      <p class="tagline">以 <b>角色</b> × <b>场景</b> × <b>脚本</b> 为资产底座，用数据驱动内容生产 ——<br>从「单条爆款」走向「可持续复用的 IP 资产运营」。</p>
+    </div>
+    <div class="card visual" style="--i:1">
+      <img id="heroImg" data-upload="heroImg" alt="广州城市天际线">
+      <div class="veil"></div>
+      <div class="cap">数据截至 2026-08 · 贝壳广州站视频运营台账</div>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="card kpi gold" style="--i:2"><div class="bar"></div><div class="v" data-num="155.3">155.3<small>万</small></div><div class="k">总播放量</div></div>
+    <div class="card kpi" style="--i:3"><div class="bar"></div><div class="v" data-num="66">66<small>条</small></div><div class="k">有效作品</div></div>
+    <div class="card kpi cyan" style="--i:4"><div class="bar"></div><div class="v" data-num="2.26">2.26<small>万</small></div><div class="k">总转发量</div></div>
+    <div class="card kpi" style="--i:5"><div class="bar"></div><div class="v" data-num="22.4">22.4<small>万</small></div><div class="k">单条最高播放</div></div>
+  </div>
+  <div class="kpis" style="margin-top:0">
+    <div class="card kpi cyan" style="--i:6"><div class="bar"></div><div class="v" data-num="5">5<small>条</small></div><div class="k">标杆作品</div></div>
+    <div class="card kpi" style="--i:7"><div class="bar"></div><div class="v" data-num="10">10<small>条</small></div><div class="k">AI 内容作品</div></div>
+    <div class="card kpi" style="--i:8"><div class="bar"></div><div class="v" data-num="1.49">1.49<small>万</small></div><div class="k">投流总消耗</div></div>
+    <div class="card kpi gold" style="--i:9"><div class="bar"></div><div class="v" data-num="45">45<small>盘</small></div><div class="k">覆盖楼盘</div></div>
+  </div>
+
+  <div class="sec" style="margin-top:44px">
+    <div class="sec-head">
+      <span class="idx">01</span><h2>月度产能与数据趋势</h2>
+      <span class="en">Monthly Performance</span><span class="rule"></span>
+      <span class="sub">1—7 月 · 播放量 / 条均 / 标杆</span>
+    </div>
+    <div class="grid23">
+      <div class="card chart-box" style="--i:0">
+        <div class="chart-title">月度播放量 · 条均播放量</div>
+        <div class="chart-sub">柱：总播放量（万）　线：条均播放量（万）　★ 当月产出标杆</div>
+        <div class="svgwrap" id="monthlyChart"></div>
+      </div>
+      <div class="card chart-box" style="--i:1">
+        <div class="chart-title">周度播放趋势</div>
+        <div class="chart-sub">上架后 7 日累计播放（万）· 第 1—26 周</div>
+        <div class="svgwrap" id="weeklyChart"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <span class="idx">02</span><h2>内容结构与区域覆盖</h2>
+      <span class="en">Content Mix</span><span class="rule"></span>
+    </div>
+    <div class="grid3">
+      <div class="card chart-box" style="--i:0">
+        <div class="chart-title">内容品类结构</div>
+        <div class="chart-sub">按作品数量分布</div>
+        <div class="svgwrap" id="catDonut"></div>
+      </div>
+      <div class="card chart-box" style="--i:1">
+        <div class="chart-title">播放量等级分布</div>
+        <div class="chart-sub">单条累计播放区间（条）</div>
+        <div class="svgwrap" id="levelChart"></div>
+      </div>
+      <div class="card chart-box" style="--i:2">
+        <div class="chart-title">行政区覆盖</div>
+        <div class="chart-sub">作品数 Top 9 区域</div>
+        <div class="svgwrap" id="districtChart"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 资产库 ================= -->
+<section class="panel" id="panel-assets">
+  <div class="sec-head">
+    <span class="idx">03</span><h2>资产库 · 六类资产画布</h2>
+    <span class="en">Asset Library</span><span class="rule"></span>
+    <span class="sub">参考「小云雀」资产创作画布模式构建</span>
+  </div>
+  <div class="asset-grid">
+    <div class="card asset a-gold" style="--i:0">
+      <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e3b96b" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+      <h3>角色资产 <span class="cnt">14+</span></h3>
+      <div class="d">主播池 14 人能力档案 + AI 数字人角色（前世王妃 / AI 形象探盘），含台词、表情、妆造、意愿度等 9 维评估。</div>
+      <div class="map"><b>对应：</b>出镜人 / 数字人形象 / 人设档案</div>
+    </div>
+    <div class="card asset a-cyan" style="--i:1">
+      <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4fd6c3" stroke-width="1.7"><path d="M3 9l9-6 9 6v11a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg></div>
+      <h3>场景资产 <span class="cnt">45+</span></h3>
+      <div class="d">覆盖广州 9 大行政区 45+ 楼盘实景，江景大平层、园林社区、售楼处沙盘、样板间等标准场景库。</div>
+      <div class="map"><b>对应：</b>楼盘实景 / 样板间 / 售楼处 / 园林</div>
+    </div>
+    <div class="card asset a-blue" style="--i:2">
+      <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8ba7ff" stroke-width="1.7"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg></div>
+      <h3>文本资产 <span class="cnt">3库</span></h3>
+      <div class="d">创造营脚本、精品视频脚本、广告片+探盘片脚本（含排期目录），沉淀爆款文案与分镜结构。</div>
+      <div class="map"><b>对应：</b>脚本库 / 文案话术 / 分镜模板</div>
+    </div>
+    <div class="card asset a-pink" style="--i:3">
+      <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff9d9d" stroke-width="1.7"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h4M15 10h3"/></svg></div>
+      <h3>音频资产 <span class="cnt">持续</span></h3>
+      <div class="d">配音、BGM、音效素材随项目持续入库，支持 AI 音乐生成（如「AI 音乐」切片内容）。</div>
+      <div class="map"><b>对应：</b>配音库 / BGM 库 / 音效</div>
+    </div>
+    <div class="card asset a-gold" style="--i:4">
+      <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e3b96b" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-10 10"/></svg></div>
+      <h3>图片资产 <span class="cnt">66+</span></h3>
+      <div class="d">视频封面、数据截图、品牌视觉、楼盘效果图统一归档，供二创与投流素材复用。</div>
+      <div class="map"><b>对应：</b>封面库 / 视觉素材 / 效果图</div>
+    </div>
+    <div class="card asset a-cyan" style="--i:5">
+      <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4fd6c3" stroke-width="1.7"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M20 9l2 3-2 3"/></svg></div>
+      <h3>视频资产 <span class="cnt">66条</span></h3>
+      <div class="d">全部成片与切片入库管理，含投流拆条、AI 切片、剪辑切片等可复用素材。</div>
+      <div class="map"><b>对应：</b>成片库 / 切片库 / 投流素材</div>
+    </div>
+  </div>
+
+  <div class="sec" style="margin-top:36px">
+    <div class="sec-head">
+      <span class="idx">04</span><h2>角色资产 · 三视图基准</h2>
+      <span class="en">Character Three-View</span><span class="rule"></span>
+      <span class="sub">主播与 AI 角色正面 / 侧面 / 背面标准基准</span>
+    </div>
+    <div class="grid2">
+      <div class="card fig" style="--i:0"><img id="anchor3v1" data-upload="anchor3v1" alt="主播三视图-男"><span class="tag">男主播 · 正 / 侧 / 背 三视图</span></div>
+      <div class="card fig" style="--i:1"><img id="anchor3v2" data-upload="anchor3v2" alt="主播三视图-女"><span class="tag">女主播 · 正 / 侧 / 背 三视图</span></div>
+    </div>
+    <div class="grid2" style="margin-top:22px">
+      <div class="card fig" style="--i:0"><img id="aiRole" data-upload="aiRole" alt="AI数字人角色·前世王妃"><span class="tag">AI 角色 · 前世王妃（穿越剧情）</span></div>
+      <div class="card fig" style="--i:1"><img id="aiHost" data-upload="aiHost" alt="AI数字人角色·探盘主播"><span class="tag">AI 角色 · 数字人探盘</span></div>
+    </div>
+  </div>
+
+  <div class="sec" style="margin-top:40px">
+    <div class="sec-head">
+      <span class="idx">05</span><h2>角色资产 · 主播能力雷达</h2>
+      <span class="en">Anchor Talent Map</span><span class="rule"></span>
+      <span class="sub">台词 / 表情 / 动作 / 情绪 / 妆造 / 脚本 / 意愿 / 配合 / 推动 9 维评分</span>
+    </div>
+    <div class="grid23">
+      <div class="card chart-box" style="--i:0">
+        <div class="chart-title">头部主播能力雷达（Top 4）</div>
+        <div class="svgwrap" id="radarChart"></div>
+      </div>
+      <div class="card chart-box" style="--i:1">
+        <div class="chart-title">主播综合评分排行（Top 8）</div>
+        <div class="chart-sub">满分 50 分 · 含推动力</div>
+        <div class="svgwrap" id="anchorRank"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <span class="idx">06</span><h2>场景资产 · 标准场景库</h2>
+      <span class="en">Scene Library</span><span class="rule"></span>
+    </div>
+    <div class="grid3">
+      <div class="card fig" style="--i:0"><img id="sceneRiver" data-upload="sceneRiver" alt="江景大平层"><span class="tag">场景 · 江景大平层</span></div>
+      <div class="card fig" style="--i:1"><img id="sceneGarden" data-upload="sceneGarden" alt="园林社区"><span class="tag">场景 · 园林社区</span></div>
+      <div class="card fig" style="--i:2"><img id="sceneSales" data-upload="sceneSales" alt="售楼处沙盘"><span class="tag">场景 · 售楼处沙盘</span></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <span class="idx">07</span><h2>文本资产 · 脚本库</h2>
+      <span class="en">Script Library</span><span class="rule"></span>
+    </div>
+    <div class="grid3" id="scriptCards"></div>
+  </div>
+</section>
+
+<!-- ================= 03 作品集 ================= -->
+<section class="panel" id="panel-portfolio">
+  <div class="sec-head">
+    <span class="idx">08</span><h2>标杆作品</h2>
+    <span class="en">Benchmark Works</span><span class="rule"></span>
+    <span class="sub">播放量 &gt; 5 万且投流 ≤ 500 元</span>
+  </div>
+  <div class="kpis" id="benchmarkKpis"></div>
+
+  <div class="sec" style="margin-top:36px">
+    <div class="sec-head">
+      <span class="idx">09</span><h2>作品集 · 全量分类</h2>
+      <span class="en">Portfolio</span><span class="rule"></span>
+      <span class="sub">点击卡片封面可替换图片 · 「查看作品」跳转视频号</span>
+    </div>
+    <div class="chips" id="pfChips">
+      <button class="chip active" data-f="all">全部</button>
+      <button class="chip" data-f="广告片-超级聚焦">超级聚焦</button>
+      <button class="chip" data-f="广告片-剪辑切片">剪辑切片</button>
+      <button class="chip" data-f="广告片-AI切片">AI 切片</button>
+      <button class="chip" data-f="探盘-创造营">创造营</button>
+      <button class="chip" data-f="广告片-其他需求">其他需求</button>
+      <button class="chip" id="resetCovers" style="margin-left:auto;border-color:rgba(227,185,107,.25);color:#e3b96b">↺ 重置全部封面</button>
+    </div>
+    <div class="pf-grid" id="pfGrid"></div>
+  </div>
+</section>
+
+<!-- ================= 04 对标·方桃子 ================= -->
+<section class="panel" id="panel-benchmark">
+  <div class="sec-head">
+    <span class="idx">10</span><h2>行业标杆对标 · AI 虚拟艺人「方桃子」</h2>
+    <span class="en">Benchmark: Fang Taozi</span><span class="rule"></span>
+  </div>
+
+  <div class="bm-hero">
+    <div class="card fig" style="--i:0"><img id="ft3" data-upload="ft3" alt="方桃子三视图"><span class="tag">角色三视图 · 正 / 侧 / 背</span></div>
+    <div class="card glass" style="--i:1">
+      <div class="glow"></div>
+      <div style="padding:26px 28px">
+        <div class="chart-title" style="margin-bottom:12px">IP 造型与人设拆解</div>
+        <p class="chart-sub" style="line-height:2">AI 短剧《被裁掉的女孩》女主 · 抖音独立账号运营 · 全平台讨论量 8 亿+</p>
+        <div class="chips-gold">
+          <span>齐刘海 · 黑长直</span><span>双颊标志性两颗痣</span><span>保留皮肤纹理 · 规避恐怖谷</span>
+          <span>小镇女孩 · 逆袭人设</span><span>20 岁 · 173cm</span>
+        </div>
+        <div class="stat-grid">
+          <div class="card stat" style="--i:0"><div class="v">2.2<small>亿</small></div><div class="k">短剧单平台播放</div></div>
+          <div class="card stat" style="--i:1"><div class="v">40<small>万</small></div><div class="k">抖音账号粉丝</div></div>
+          <div class="card stat" style="--i:2"><div class="v">2600<small>万+</small></div><div class="k">账号总点赞</div></div>
+          <div class="card stat" style="--i:3"><div class="v">25.8<small>万/60s</small></div><div class="k">短视频广告报价</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid3" style="margin-top:22px">
+    <div class="card fig" style="--i:0"><img id="ft1" data-upload="ft1" alt="方桃子角色造型"><span class="tag">角色 · 日常 Vlog 造型</span></div>
+    <div class="card fig" style="--i:1"><img id="ftDrama" data-upload="ftDrama" alt="方桃子AI短剧画面"><span class="tag">画面 · AI 短剧《被裁掉的女孩》</span></div>
+    <div class="card fig" style="--i:2"><img id="ftCosmo" data-upload="ftCosmo" alt="方桃子时尚大片"><span class="tag">画面 · 时尚杂志 AI 大片</span></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <span class="idx">11</span><h2>资产管理 · 双叙事线</h2>
+      <span class="en">Dual Narrative Asset Model</span><span class="rule"></span>
+    </div>
+    <div class="card glass" style="padding:30px 28px; --i:0">
+      <div class="glow"></div>
+      <div class="flow">
+        <div class="node"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e3b96b" stroke-width="1.6"><path d="M2 12l4-6 4 9 4-7 4 6 4-4"/></svg></span><div class="n">剧集 · 出道舞台</div><div class="d">《被裁掉的女孩》建立完整人设与情感基础</div></div>
+        <div class="arrow">→</div>
+        <div class="node"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4fd6c3" stroke-width="1.6"><path d="M4 8h16M4 12h16M4 16h10"/></svg></span><div class="n">日常 Vlog · 长线陪伴</div><div class="d">做饭 / 买花 / 健身 · 把角色生命周期拉长至数月</div></div>
+        <div class="arrow">→</div>
+        <div class="node"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8ba7ff" stroke-width="1.6"><path d="M12 3l2 5 5 .4-4 3.2 1.4 5L12 14l-4.4 2.6L9 11.6l-4-3.2L10 8z"/></svg></span><div class="n">番外 · 花絮 · 综艺</div><div class="d">周边内容同步产出，持续沉淀 IP 资产</div></div>
+        <div class="arrow">→</div>
+        <div class="node"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f4d79b" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg></span><div class="n">版权登记 · 系列 IP</div><div class="d">角色版权 + 「桃园珊姐妹」系列化运营</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <span class="idx">12</span><h2>变现方案拆解</h2>
+      <span class="en">Monetization</span><span class="rule"></span>
+    </div>
+    <div class="grid2">
+      <div class="card insight" style="--i:0">
+        <div class="no">01</div><h3>短视频广告</h3>
+        <p>巨量星图报价：1-20 秒 16.8 万 / 21-60 秒 20.8 万 / 60 秒以上 25.8 万元，按虚拟艺人定价体系售卖品牌曝光。</p>
+      </div>
+      <div class="card insight" style="--i:1">
+        <div class="no">02</div><h3>品牌植入 · 电商</h3>
+        <p>Vlog 场景原生植入（如防晒喷雾、美瞳），生活化内容承载产品种草，争议事件后转向「先内容、后商务」策略。</p>
+      </div>
+      <div class="card insight" style="--i:2">
+        <div class="no">03</div><h3>时尚媒体 × AI 大片</h3>
+        <p>登上《时尚 COSMO》COSMOCRUSH 电子刊，AI 完成封面与大片的拍摄级产出，低成本撬动时尚背书。</p>
+      </div>
+      <div class="card insight" style="--i:3">
+        <div class="no">04</div><h3>版权与系列 IP</h3>
+        <p>角色登记版权，规划「桃园珊姐妹」系列 IP；第二季内容持续放大角色商业价值。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <span class="idx">13</span><h2>对我方的启示 · 从 AI 内容到 IP</h2>
+      <span class="en">From AI Content to IP</span><span class="rule"></span>
+    </div>
+    <div class="bm-cols">
+      <div class="card glass" style="padding:24px; --i:0">
+        <div class="chart-title" style="margin-bottom:14px">我方 AI 切片作品</div>
+        <div class="ai-strip" id="aiStrip"></div>
+        <p class="tip" style="margin-top:14px">已上线「AI 数字人探盘」「前世王妃穿越」等 10 条 AI 内容，具备角色资产化基础。</p>
+      </div>
+      <div class="card glass" style="padding:24px; --i:1">
+        <div class="chart-title" style="margin-bottom:8px">IP 化路径</div>
+        <div class="path">
+          <div class="ps"><div class="dot">1</div><div class="t">AI 内容试验</div><div class="d">数字人 / 穿越剧情跑通形态</div></div>
+          <div class="ps"><div class="dot">2</div><div class="t">角色资产化</div><div class="d">三视图 + 人设档案入库</div></div>
+          <div class="ps"><div class="dot">3</div><div class="t">人设沉淀</div><div class="d">统一形象 / 声音 / 口吻</div></div>
+          <div class="ps"><div class="dot">4</div><div class="t">账号矩阵</div><div class="d">角色独立账号持续更新</div></div>
+          <div class="ps"><div class="dot">5</div><div class="t">商业变现</div><div class="d">楼盘合作 / 品牌植入</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="sec">
+    <div class="sec-head">
+      <span class="idx">13+</span><h2>房地产行业成熟变现方式</h2>
+      <span class="en">Real Estate Monetization Playbook</span><span class="rule"></span>
+      <span class="sub">行业已验证 · 可直接复用</span>
+    </div>
+    <div class="monet-grid">
+      <div class="card monet" style="--i:0">
+        <span class="tag2">基础盘</span>
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e3b96b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="12" r="4.5"/><circle cx="15.5" cy="12" r="4.5"/></svg></div>
+        <div class="t">成交分佣</div>
+        <div class="d">带看促成成交 · 按佣金比例分成</div>
+      </div>
+      <div class="card monet" style="--i:1">
+        <span class="tag2">广告单</span>
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e3b96b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 21v-6h6v6M8 8h2M8 12h2M14 8h2M14 12h2"/></svg></div>
+        <div class="t">楼盘商务合作</div>
+        <div class="d">楼盘种草 · 探盘测评软广投放</div>
+      </div>
+      <div class="card monet" style="--i:2">
+        <span class="tag2">增量转化</span>
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e3b96b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.8l5.5 3.2-5.5 3.2z"/></svg></div>
+        <div class="t">直播专场卖房</div>
+        <div class="d">直播间留资 + 带看转化成交</div>
+      </div>
+      <div class="card monet" style="--i:3">
+        <span class="tag2">即时变现</span>
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e3b96b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3.5 20v-1.5A5.5 5.5 0 019 13h2a5.5 5.5 0 015.5 5.5V20"/><path d="M16 5a3.5 3.5 0 010 6"/></svg></div>
+        <div class="t">线索付费 CPL</div>
+        <div class="d">有效加微 · 到访按条计费</div>
+      </div>
+      <div class="card monet" style="--i:4">
+        <span class="tag2">规模化</span>
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e3b96b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2.5"/><path d="M12 8V5M9 13h.01M15 13h.01M9 16h6"/></svg></div>
+        <div class="t">AI 内容代运营</div>
+        <div class="d">数字人批量生产 · SaaS 收费</div>
+      </div>
+      <div class="card monet" style="--i:5">
+        <span class="tag2">品牌溢价</span>
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e3b96b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.5 6.8 19l1-5.8-4.2-4.1 5.8-.8z"/></svg></div>
+        <div class="t">IP 授权联名</div>
+        <div class="d">角色 IP 授权楼盘营销活动</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 资产模式 ================= -->
+<section class="panel" id="panel-model">
+  <div class="sec-head">
+    <span class="idx">14</span><h2>资产运营模式 · 从一次性拍摄到可复用资产</h2>
+    <span class="en">Asset Operation Model</span><span class="rule"></span>
+    <span class="sub">参考「小云雀」资产管理体系，将每次拍摄沉淀为可复用资产，新项目直接调用已有角色 / 场景 / 脚本，降低边际成本</span>
+  </div>
+
+  <div class="sec">
+    <div class="grid3">
+      <div class="card insight" style="--i:0">
+        <div class="no">01</div><h3>为什么需要资产管理</h3>
+        <p>当前每条视频独立拍摄、主播重复沟通、场景重复踩点。建立资产库后，新项目直接 @ 调用已有角色和场景，制作周期从 7 天压缩至 2 天。</p>
+      </div>
+      <div class="card insight" style="--i:1">
+        <div class="no">02</div><h3>资产库沉淀什么</h3>
+        <p>角色三视图 + 人设档案、场景环境图 + 光向参数、脚本模板、配音 BGM、视觉素材、成片切片。每次拍摄自动入库，持续积累。</p>
+      </div>
+      <div class="card insight" style="--i:2">
+        <div class="no">03</div><h3>对标方桃子的变现路径</h3>
+        <p>方桃子通过角色资产化 → 账号矩阵 → 品牌广告 + 短剧 + 电商的三段式变现。我方先建库，再探索楼盘合作与品牌植入。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <span class="idx">15</span><h2>六类资产 · 映射到贝壳落地</h2>
+      <span class="en">Asset Mapping</span><span class="rule"></span>
+    </div>
+    <div class="card glass" style="padding:10px 24px; --i:0">
+      <table class="map-table">
+        <thead><tr><th>资产类型</th><th>定义</th><th>贝壳已沉淀的资产</th><th>复用场景</th></tr></thead>
+        <tbody>
+          <tr><td><span class="fm">角色资产</span></td><td>人设 + 三视图基准</td><td><span class="to">14 位主播 + AI 数字人</span></td><td>新楼盘直接匹配主播</td></tr>
+          <tr><td><span class="fm">场景资产</span></td><td>环境图 + 光向参数</td><td><span class="to">45 个楼盘实景库</span></td><td>同类楼盘调取参考</td></tr>
+          <tr><td><span class="fm">文本资产</span></td><td>脚本 / 分镜 / 台词</td><td><span class="to">3 大脚本模板库</span></td><td>爆款结构复用</td></tr>
+          <tr><td><span class="fm">视频资产</span></td><td>成片 + 切片素材</td><td><span class="to">66 条成片库</span></td><td>切片二次分发</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <span class="idx">16</span><h2>落地三阶段规划</h2>
+      <span class="en">Roadmap</span><span class="rule"></span>
+    </div>
+    <div class="grid3">
+      <div class="card insight" style="--i:0">
+        <div class="no">PHASE 01</div><h3>资产盘点入库</h3>
+        <p>将 66 条成片、45 个楼盘、14 位主播完成标签化归档，建立统一资产台账。</p>
+      </div>
+      <div class="card insight" style="--i:1">
+        <div class="no">PHASE 02</div><h3>标准化基准</h3>
+        <p>为主播与 AI 角色建立三视图与人设基准，场景固化光向参数，脚本沉淀爆款结构模板。</p>
+      </div>
+      <div class="card insight" style="--i:2">
+        <div class="no">PHASE 03</div><h3>复用与变现</h3>
+        <p>新项目直接调用资产，跨楼盘批量生产；对标方桃子探索角色 IP 广告与品牌合作变现。</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="ln"></div>
+  贝壳广州站 · 房产视频运营全景方案 · 数据截至 2026-08（来源：视频运营台账）· 行业标杆资料引自公开报道
+</footer>
+
+<script>
+/* =========================================================
+   DATA
+========================================================= */
+var DATA = {
+  months: [
+    {m:1,cnt:2,plays:3.7977,avg:1.89885,fwd:155.5,invest:400,bm:0,top1:19090},
+    {m:2,cnt:1,plays:1.8578,avg:1.8578,fwd:24,invest:200,bm:0,top1:18578},
+    {m:3,cnt:5,plays:19.2815,avg:3.8563,fwd:940,invest:1700,bm:1,top1:61186},
+    {m:4,cnt:8,plays:18.4816,avg:2.3102,fwd:403.375,invest:1960.25,bm:1,top1:59782},
+    {m:5,cnt:8,plays:27.6789,avg:3.4598625,fwd:254.375,invest:2941,bm:1,top1:53625},
+    {m:6,cnt:8,plays:27.0452,avg:3.38065,fwd:510.625,invest:3210,bm:1,top1:51339},
+    {m:7,cnt:20,plays:45.8716,avg:2.29358,fwd:268.15,invest:2800,bm:1,top1:224015}
+  ],
+  weeks: [
+    {w:1,label:'1/4',plays:1.8887},{w:3,label:'1/18',plays:1.909},
+    {w:6,label:'2/8',plays:1.8578},{w:12,label:'3/22',plays:10.458},
+    {w:13,label:'3/29',plays:8.8235},{w:14,label:'4/5',plays:1.0311},
+    {w:15,label:'4/12',plays:1.2565},{w:16,label:'4/19',plays:4.279},
+    {w:17,label:'4/26',plays:5.9782},{w:18,label:'5/3',plays:5.9368},
+    {w:19,label:'5/10',plays:3.0971},{w:20,label:'5/17',plays:5.0861},
+    {w:21,label:'5/24',plays:10.7233},{w:22,label:'5/31',plays:8.7724},
+    {w:23,label:'6/7',plays:10.1673},{w:24,label:'6/14',plays:10.5144},
+    {w:25,label:'6/21',plays:2.5942},{w:26,label:'6/28',plays:3.7693}
+  ],
+  benchmarks: [
+    {loupan:'越秀万博城8',anchor:'温顺超',district:'番禺区',plays:223902,fwd:2119,invest:600,link:'https://weixin.qq.com/sph/A4WtwkBoS'},
+    {loupan:'越秀万博城5',anchor:'廖伟翔',district:'番禺区',plays:61186,fwd:498,invest:500,link:'https://weixin.qq.com/sph/AJqGydGyL'},
+    {loupan:'中建天钰1',anchor:'李会堂',district:'海珠区',plays:55867,fwd:316,invest:500,link:'https://weixin.qq.com/sph/AwHbDaMbg'},
+    {loupan:'华丰金湾2',anchor:'曾增',district:'南沙区',plays:50861,fwd:150,invest:450,link:'https://weixin.qq.com/sph/AdFXWlBSS'},
+    {loupan:'星河湾半山4',anchor:'张弘',district:'黄埔区',plays:50334,fwd:1185,invest:470,link:'https://weixin.qq.com/sph/AlYeSc7kS'}
+  ],
+  anchors: [
+    {name:'丁铁东',scores:[4.75,4.75,4.5,4.5,4.75,4.75,5,4.75,5],total:42.75},
+    {name:'曹羽晗',scores:[4.25,4.75,4.75,4.75,4.75,4.75,5,4.75,3],total:40.75},
+    {name:'张磊',scores:[3.75,4,3.75,4.25,4,3.75,4,4.5,3],total:35},
+    {name:'廖伟翔',scores:[4.25,4.25,3.75,3.75,2.75,3.25,5,3.75,4],total:34.75},
+    {name:'马群',scores:[3.75,3.75,3.25,3.25,4,3.75,3,3.75,3],total:31.5},
+    {name:'王雪',scores:[4.25,3.25,3.25,3.25,4.25,4,5,4,0],total:31.25},
+    {name:'高久振',scores:[3.75,3.5,3,3,3.75,3.75,3,3.75,2],total:29.5},
+    {name:'梁石蒙',scores:[3.75,3.25,3.25,3.25,3.75,3.75,4,3.25,1],total:29.25}
+  ],
+  districts: [
+    {name:'南沙区',value:14},{name:'增城区',value:11},{name:'海珠区',value:10},
+    {name:'番禺区',value:10},{name:'黄埔区',value:9},{name:'白云区',value:5},
+    {name:'天河区',value:3},{name:'荔湾区',value:3},{name:'花都区',value:1}
+  ],
+  levels: [
+    {name:'<1w',value:27},{name:'1-3w',value:18},{name:'5-10w',value:10},
+    {name:'3-5w',value:10},{name:'10w+',value:1}
+  ],
+  videos: [
+    {cat:'广告片-超级聚焦',district:'番禺区',loupan:'越秀万博城8',anchor:'温顺超',date:'2026-07-26',plays:224015,fwd:2120,like:357,cmt:79,level:'10w+',link:'https://weixin.qq.com/sph/A4WtwkBoS'},
+    {cat:'广告片-其他需求',district:'天河区',loupan:'保利晨园湖境',anchor:'崔莹',date:'2026-07-25',plays:64386,fwd:955,like:392,cmt:42,level:'5-10w',link:'https://weixin.qq.com/sph/AnijUOkv9'},
+    {cat:'广告片-超级聚焦',district:'番禺区',loupan:'越秀万博城5',anchor:'廖伟翔',date:'2026-03-20',plays:61186,fwd:498,like:103,cmt:13,level:'5-10w',link:'https://weixin.qq.com/sph/AJqGydGyL'},
+    {cat:'广告片-超级聚焦',district:'白云区',loupan:'保利锦绣公馆1',anchor:'王巍巍',date:'2026-04-22',plays:59782,fwd:557,like:99,cmt:8,level:'5-10w',link:'https://weixin.qq.com/sph/AXLlT02vl'},
+    {cat:'广告片-其他需求',district:'黄埔区',loupan:'黄埔润府3',anchor:'余乐',date:'2026-07-24',plays:57930,fwd:705,like:202,cmt:46,level:'5-10w',link:'https://weixin.qq.com/sph/APxlh4PpQ'},
+    {cat:'广告片-超级聚焦',district:'海珠区',loupan:'中建天钰1',anchor:'李会堂',date:'2026-04-30',plays:55867,fwd:316,like:62,cmt:12,level:'5-10w',link:'https://weixin.qq.com/sph/AwHbDaMbg'},
+    {cat:'广告片-超级聚焦',district:'荔湾区',loupan:'万科理想花地·瑧园3',anchor:'王雪、Bee姐、学鲁',date:'2026-05-31',plays:53625,fwd:696,like:140,cmt:23,level:'5-10w',link:'https://weixin.qq.com/sph/AMGB2HlOC'},
+    {cat:'广告片-超级聚焦',district:'白云区',loupan:'中铁诺德·阅泷1',anchor:'张磊',date:'2026-05-23',plays:53084,fwd:252,like:51,cmt:28,level:'5-10w',link:'https://weixin.qq.com/sph/AsgFLA3bm'},
+    {cat:'广告片-超级聚焦',district:'增城区',loupan:'振业学府里2',anchor:'高久振',date:'2026-06-02',plays:51339,fwd:1249,like:92,cmt:30,level:'5-10w',link:'https://weixin.qq.com/sph/AL1GByPww'},
+    {cat:'广告片-超级聚焦',district:'南沙区',loupan:'华丰金湾2',anchor:'曾增',date:'2026-05-12',plays:50861,fwd:150,like:71,cmt:6,level:'5-10w',link:'https://weixin.qq.com/sph/AdFXWlBSS'},
+    {cat:'广告片-超级聚焦',district:'黄埔区',loupan:'星河湾半山4',anchor:'张弘',date:'2026-06-01',plays:50334,fwd:1185,like:95,cmt:25,level:'5-10w',link:'https://weixin.qq.com/sph/AlYeSc7kS'},
+    {cat:'广告片-超级聚焦',district:'天河区',loupan:'世纪金源天河源筑2',anchor:'丁铁东',date:'2026-03-27',plays:45626,fwd:3256,like:79,cmt:16,level:'3-5w',link:'https://weixin.qq.com/sph/AcdHMGbFp'},
+    {cat:'广告片-超级聚焦',district:'番禺区',loupan:'越秀万博城6',anchor:'廖伟翔',date:'2026-03-25',plays:42609,fwd:744,like:68,cmt:14,level:'3-5w',link:'https://weixin.qq.com/sph/A8hzSHKv2'},
+    {cat:'广告片-超级聚焦',district:'番禺区',loupan:'长隆万博悦府4',anchor:'廖伟翔',date:'2026-06-08',plays:42138,fwd:450,like:95,cmt:20,level:'3-5w',link:'https://weixin.qq.com/sph/AlNaAOmxn'},
+    {cat:'广告片-超级聚焦',district:'增城区',loupan:'振业学府里3',anchor:'高久振',date:'2026-07-06',plays:38772,fwd:658,like:78,cmt:21,level:'3-5w',link:'https://weixin.qq.com/sph/AOX690WOw'},
+    {cat:'广告片-超级聚焦',district:'番禺区',loupan:'恒基学苑壹号1',anchor:'陈年烁、蒋楠',date:'2026-06-11',plays:38422,fwd:273,like:94,cmt:18,level:'3-5w',link:'https://weixin.qq.com/sph/AlK4YP1oT'},
+    {cat:'广告片-超级聚焦',district:'增城区',loupan:'振业学府里4',anchor:'外聘模特',date:'2026-07-31',plays:36044,fwd:304,like:32,cmt:2,level:'3-5w',link:'https://weixin.qq.com/sph/AuhFYhgdS'},
+    {cat:'广告片-超级聚焦',district:'南沙区',loupan:'山海合悦4',anchor:'外聘模特',date:'2026-08-11',plays:35193,fwd:56,like:29,cmt:6,level:'3-5w',link:'https://weixin.qq.com/sph/AiolCamNT'},
+    {cat:'广告片-超级聚焦',district:'海珠区',loupan:'广州滨江天地2',anchor:'谢永春',date:'2026-08-17',plays:33499,fwd:784,like:194,cmt:30,level:'3-5w',link:'https://weixin.qq.com/sph/AFcLnlRk6'},
+    {cat:'探盘-创造营',district:'白云区',loupan:'江语上品苑4',anchor:'伍晓晓',date:'2026-04-17',plays:31555,fwd:348,like:60,cmt:7,level:'3-5w',link:'https://weixin.qq.com/sph/AiyUtIDth'},
+    {cat:'广告片-超级聚焦',district:'黄埔区',loupan:'中建未来方洲4',anchor:'钟戈登',date:'2026-05-05',plays:30971,fwd:283,like:54,cmt:14,level:'3-5w',link:'https://weixin.qq.com/sph/Ab8GVbjb3'},
+    {cat:'广告片-超级聚焦',district:'荔湾区',loupan:'诚汇新都·榕诚湾4',anchor:'王雪',date:'2026-05-20',plays:28367,fwd:132,like:46,cmt:17,level:'1-3w',link:'https://weixin.qq.com/sph/ASvmhAnQD'},
+    {cat:'广告片-超级聚焦',district:'南沙区',loupan:'山海合悦3',anchor:'马群',date:'2026-06-19',plays:25942,fwd:157,like:135,cmt:11,level:'1-3w',link:'https://weixin.qq.com/sph/AOsMwrAjD'},
+    {cat:'探盘-创造营',district:'黄埔区',loupan:'中交四航珠江春4',anchor:'伍晓晓',date:'2026-05-22',plays:25782,fwd:219,like:51,cmt:22,level:'1-3w',link:'https://weixin.qq.com/sph/Apz8gh96E'},
+    {cat:'广告片-超级聚焦',district:'黄埔区',loupan:'合生中央城2',anchor:'张波',date:'2026-06-13',plays:24584,fwd:463,like:70,cmt:23,level:'1-3w',link:'https://weixin.qq.com/sph/AO8CsVbaA'},
+    {cat:'广告片-超级聚焦',district:'番禺区',loupan:'珠江铂世湾2',anchor:'外聘模特',date:'2026-07-04',plays:22819,fwd:97,like:31,cmt:3,level:'1-3w',link:'https://weixin.qq.com/sph/A9AU8DvIu'},
+    {cat:'广告片-超级聚焦',district:'南沙区',loupan:'深业颐泽府6',anchor:'游丽娟',date:'2026-06-22',plays:22393,fwd:82,like:56,cmt:2,level:'1-3w',link:'https://weixin.qq.com/sph/AhFUb7dx6'},
+    {cat:'广告片-超级聚焦',district:'天河区',loupan:'江源半岛花园1',anchor:'黄绍榆',date:'2026-03-19',plays:21771,fwd:162,like:33,cmt:5,level:'1-3w',link:'https://weixin.qq.com/sph/AT8GBN1nB'},
+    {cat:'探盘-创造营',district:'黄埔区',loupan:'中交四航珠江春3',anchor:'伍晓晓',date:'2026-03-20',plays:21623,fwd:40,like:18,cmt:0,level:'1-3w',link:'https://weixin.qq.com/sph/AXGwdC5xq'},
+    {cat:'广告片-超级聚焦',district:'增城区',loupan:'合汇璟园1',anchor:'祁红梅',date:'2026-08-22',plays:20654,fwd:463,like:149,cmt:34,level:'1-3w',link:'https://weixin.qq.com/sph/AmLZN5y6z'},
+    {cat:'探盘-创造营',district:'海珠区',loupan:'中交天翠2',anchor:'伍晓晓',date:'2026-01-13',plays:19090,fwd:272,like:39,cmt:2,level:'1-3w',link:'https://weixin.qq.com/sph/A0RjgXFNi'},
+    {cat:'探盘-创造营',district:'南沙区',loupan:'星河东悦府2',anchor:'伍晓晓',date:'2026-01-04',plays:18887,fwd:39,like:22,cmt:2,level:'1-3w',link:'https://weixin.qq.com/sph/AfVh6R5lP'},
+    {cat:'探盘-创造营',district:'花都区',loupan:'中旅阿那亚九龙湖1',anchor:'伍晓晓',date:'2026-02-06',plays:18578,fwd:24,like:18,cmt:1,level:'1-3w',link:'https://weixin.qq.com/sph/A8ltyCpR8'},
+    {cat:'广告片-超级聚焦',district:'南沙区',loupan:'深业颐泽府3',anchor:'肖瑞宾',date:'2026-05-30',plays:17185,fwd:128,like:60,cmt:16,level:'1-3w',link:'https://weixin.qq.com/sph/AV3NpbjkD'},
+    {cat:'广告片-超级聚焦',district:'南沙区',loupan:'山海合悦1',anchor:'/',date:'2026-05-28',plays:16914,fwd:175,like:52,cmt:17,level:'1-3w',link:'https://weixin.qq.com/sph/AtqHaQFm3'},
+    {cat:'广告片-超级聚焦',district:'番禺区',loupan:'广地花园1',anchor:'游丽娟、王利杰',date:'2026-06-23',plays:15300,fwd:226,like:49,cmt:6,level:'1-3w',link:'https://weixin.qq.com/sph/AOWkhYtDA'},
+    {cat:'广告片-超级聚焦',district:'白云区',loupan:'越秀·天悦云湖3',anchor:'张磊',date:'2026-04-08',plays:12565,fwd:348,like:73,cmt:10,level:'1-3w',link:'https://weixin.qq.com/sph/AxyZwoa36'},
+    {cat:'广告片-AI切片',district:'白云区',loupan:'保利翡丽云镜3',anchor:'AI',date:'2026-08-18',plays:11473,fwd:1296,like:162,cmt:40,level:'1-3w',link:'https://weixin.qq.com/sph/AFGQ9SXYk'},
+    {cat:'广告片-超级聚焦',district:'荔湾区',loupan:'建鑫·如意芳华1',anchor:'许钟旗',date:'2026-04-14',plays:11235,fwd:1072,like:77,cmt:7,level:'1-3w',link:'https://weixin.qq.com/sph/AVGLkBVav'},
+    {cat:'广告片-超级聚焦',district:'海珠区',loupan:'保利燕语堂悦3',anchor:'李会堂',date:'2026-08-25',plays:9258,fwd:216,like:66,cmt:10,level:'<1w',link:'https://weixin.qq.com/sph/ATe2FWFkC'},
+    {cat:'广告片-AI切片',district:'黄埔区',loupan:'黄埔润府3',anchor:'AI',date:'2026-07-17',plays:8765,fwd:115,like:21,cmt:4,level:'<1w',link:'https://weixin.qq.com/sph/A35Hrm8BH'},
+    {cat:'探盘-创造营',district:'增城区',loupan:'新世界星辉2',anchor:'庄惠玲',date:'2026-04-04',plays:7095,fwd:263,like:40,cmt:35,level:'<1w',link:'https://weixin.qq.com/sph/Agx9KmBzx'},
+    {cat:'广告片-超级聚焦',district:'黄埔区',loupan:'振业天成2',anchor:'梁石蒙',date:'2026-04-28',plays:3501,fwd:140,like:23,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/AkOFIq3Pa'},
+    {cat:'广告片-超级聚焦',district:'南沙区',loupan:'华丰金湾1',anchor:'马群',date:'2026-04-02',plays:3216,fwd:183,like:31,cmt:1,level:'<1w',link:'https://weixin.qq.com/sph/A3NVxgLlv'},
+    {cat:'广告片-剪辑切片',district:'番禺区',loupan:'越秀万博城8',anchor:'温顺超',date:'2026-07-29',plays:989,fwd:143,like:15,cmt:2,level:'<1w',link:'https://weixin.qq.com/sph/A90GqItTk'},
+    {cat:'广告片-AI切片',district:'南沙区',loupan:'山海合悦3',anchor:'AI',date:'2026-07-03',plays:626,fwd:15,like:4,cmt:3,level:'<1w',link:'https://weixin.qq.com/sph/Au8140Yti'},
+    {cat:'广告片-AI切片',district:'黄埔区',loupan:'黄埔润府3',anchor:'/',date:'2026-07-18',plays:621,fwd:8,like:8,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/ALYIyDAI8'},
+    {cat:'广告片-AI切片',district:'南沙区',loupan:'山海合悦3',anchor:'AI',date:'2026-07-03',plays:543,fwd:40,like:9,cmt:7,level:'<1w',link:'https://weixin.qq.com/sph/AqQKt7DHo'},
+    {cat:'广告片-AI切片',district:'南沙区',loupan:'山海合悦4',anchor:'AI',date:'2026-07-31',plays:537,fwd:10,like:5,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/AWm1oP9UL'},
+    {cat:'广告片-剪辑切片',district:'番禺区',loupan:'越秀万博城8',anchor:'温顺超',date:'2026-07-29',plays:483,fwd:57,like:5,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/ALzt0F2tz'},
+    {cat:'广告片-剪辑切片',district:'增城区',loupan:'振业学府里4',anchor:'外聘模特',date:'2026-07-31',plays:405,fwd:6,like:3,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/Acv2py10m'},
+    {cat:'广告片-AI切片',district:'增城区',loupan:'振业学府里4',anchor:'AI',date:'2026-07-31',plays:382,fwd:6,like:3,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/Ay4DqKXR6'},
+    {cat:'广告片-剪辑切片',district:'海珠区',loupan:'广州滨江天地2',anchor:'谢永春',date:'2026-08-28',plays:359,fwd:1,like:6,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/A6tjwsEtd'},
+    {cat:'广告片-剪辑切片',district:'增城区',loupan:'合汇璟园1',anchor:'祁红梅',date:'2026-08-27',plays:355,fwd:2,like:4,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/AnW2avN6C'},
+    {cat:'广告片-剪辑切片',district:'番禺区',loupan:'越秀万博城8',anchor:'温顺超',date:'2026-07-31',plays:354,fwd:105,like:4,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/ATfUl5ewm'},
+    {cat:'广告片-剪辑切片',district:'海珠区',loupan:'保利燕语堂悦3',anchor:'李会堂',date:'2026-08-28',plays:332,fwd:0,like:2,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/AjYFBVgL8'},
+    {cat:'广告片-AI切片',district:'南沙区',loupan:'星河东悦府5',anchor:'AI',date:'2026-07-29',plays:313,fwd:7,like:4,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/A5c0BRPYm'},
+    {cat:'广告片-剪辑切片',district:'海珠区',loupan:'保利燕语堂悦3',anchor:'李会堂',date:'2026-08-28',plays:301,fwd:1,like:2,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/Ad3tCWd5u'},
+    {cat:'广告片-剪辑切片',district:'增城区',loupan:'合汇璟园1',anchor:'祁红梅',date:'2026-08-28',plays:270,fwd:1,like:1,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/A2b6mOjoN'},
+    {cat:'广告片-AI切片',district:'南沙区',loupan:'山海合悦4',anchor:'AI',date:'2026-07-31',plays:249,fwd:2,like:1,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/AueBYcids'},
+    {cat:'广告片-剪辑切片',district:'增城区',loupan:'振业学府里4',anchor:'外聘模特',date:'2026-07-31',plays:248,fwd:7,like:2,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/AKB7b8ZKB'},
+    {cat:'广告片-AI切片',district:'南沙区',loupan:'山海合悦4',anchor:'AI',date:'2026-07-31',plays:235,fwd:3,like:1,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/AYDInryxr'},
+    {cat:'广告片-剪辑切片',district:'海珠区',loupan:'广州滨江天地2',anchor:'谢永春',date:'2026-08-28',plays:212,fwd:2,like:2,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/A45xAbh5I'},
+    {cat:'广告片-剪辑切片',district:'增城区',loupan:'合汇璟园1',anchor:'祁红梅',date:'2026-08-28',plays:183,fwd:1,like:2,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/Ao2cs2c59'},
+    {cat:'广告片-剪辑切片',district:'海珠区',loupan:'保利燕语堂悦3',anchor:'李会堂',date:'2026-08-28',plays:178,fwd:0,like:2,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/AFB4WECKZ'},
+    {cat:'广告片-剪辑切片',district:'海珠区',loupan:'广州滨江天地2',anchor:'谢永春',date:'2026-08-28',plays:175,fwd:0,like:3,cmt:0,level:'<1w',link:'https://weixin.qq.com/sph/A98cId02v'}
+  ],
+
+  aiTop: [
+    {loupan:'保利翡丽云镜3',plays:11473,fwd:1296,cover:'https://wdcdn.qpic.cn/MTY4ODg1NDk5OTU3MTk4MQ_901766_kOUsSsDyTyr-PPzu_1787311611?w=376&h=99'},
+    {loupan:'黄埔润府3',plays:8765,fwd:115,cover:'https://wdcdn.qpic.cn/MTY4ODg1NDk5OTU3MTk4MQ_694356_BbAEM76LVKKHkU51_1784518710?w=320&h=111'},
+    {loupan:'山海合悦3',plays:626,fwd:15,cover:'https://wdcdn.qpic.cn/MTY4ODg1NDk5OTU3MTk4MQ_406733_L_VsrxcLoW8YgY5-_1783305372?w=471&h=128'},
+    {loupan:'山海合悦4',plays:537,fwd:10,cover:'https://wdcdn.qpic.cn/MTY4ODg1NDk5OTU3MTk4MQ_457154_vb6iuL2lZf6MImww_1785996714?w=350&h=117'}
+  ],
+  scripts: [
+    {name:'创造营脚本',desc:'探盘-创造营系列 · 场景化探盘模板',url:'https://doc.weixin.qq.com/sheet/e3_AQ0AngZTADI4ee2MQ11RRGjQKErkU?scode=AJMA1Qc4AAwntcltV1AD0AbwZdANE&tab=ocy3t0'},
+    {name:'精品视频脚本',desc:'广告片-超级聚焦 · 精品化制作标准',url:'https://doc.weixin.qq.com/sheet/e3_AD0AbwZdANECN94F01yWjQC2SmYxV?scode=AJMA1Qc4AAwOFaypciAD0AbwZdANE&tab=1vpifn'},
+    {name:'广告片 + 探盘片脚本',desc:'含排期目录 · 全量项目管理',url:'https://doc.weixin.qq.com/sheet/e3_AD0AbwZdANECN94F01yWjQC2SmYxV?scode=AJMA1Qc4AAwZ6omHu6AQ0AngZTADI&tab=20vwdk'}
+  ]
+};
+
+var IMG = {
+  hero: 'assets/hero.jpg',
+  ft3: 'assets/ft3.jpg',
+  ft1: 'assets/ft1.jpg',
+  ftDrama: 'assets/ftDrama.jpg',
+  ftCosmo: 'assets/ftCosmo.jpg',
+  s1: 'assets/s1.jpg',
+  s2: 'assets/s2.jpg',
+  s3: 'assets/s3.jpg',
+  aiRole: 'assets/aiRole_new2.jpg',
+  aiHost: 'assets/aiHost_new2.jpg',
+  anchor3v1: 'assets/anchor_threeview_new.jpg',
+  anchor3v2: 'assets/anchor2_threeview_new.jpg'
+};
+
+/* =========================================================
+   IMAGES
+========================================================= */
+document.getElementById('heroImg').src = IMG.hero;
+document.getElementById('ft3').src = IMG.ft3;
+document.getElementById('ft1').src = IMG.ft1;
+document.getElementById('ftDrama').src = IMG.ftDrama;
+document.getElementById('ftCosmo').src = IMG.ftCosmo;
+document.getElementById('sceneRiver').src = IMG.s1;
+document.getElementById('sceneGarden').src = IMG.s2;
+document.getElementById('sceneSales').src = IMG.s3;
+document.getElementById('aiRole').src = IMG.aiRole;
+document.getElementById('aiHost').src = IMG.aiHost;
+document.getElementById('anchor3v1').src = IMG.anchor3v1;
+document.getElementById('anchor3v2').src = IMG.anchor3v2;
+
+/* =========================================================
+   SVG CHART HELPERS
+========================================================= */
+var NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs){
+  var el = document.createElementNS(NS, tag);
+  for (var k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+/* --- horizontal bars --- */
+var hbSeq = 0;
+function hBars(container, items, opts){
+  opts = opts || {};
+  var w = 560, h = opts.h || (items.length*44 + 20);
+  var padL = opts.padL || 84, padR = 24, padT = 14, padB = 8;
+  var iw = w - padL - padR, ih = h - padT - padB;
+  var max = Math.max.apply(null, items.map(function(it){return it.value;}));
+  var gid = 'hbGrad' + (++hbSeq);
+  var svg = svgEl('svg', {viewBox:'0 0 '+w+' '+h, class:'svg'});
+  items.forEach(function(it, i){
+    var y = padT + i*(ih/items.length);
+    var bh = Math.min(22, ih/items.length - 8);
+    var bw = (it.value/max)*iw;
+    var g = svgEl('g');
+    var label = svgEl('text', {x:padL-10, y:y+bh/2+4, 'text-anchor':'end', fill:'#8b96ad', 'font-size':'12'});
+    label.textContent = it.name;
+    g.appendChild(label);
+    var rect = svgEl('rect', {x:padL, y:y, width:bw, height:bh, rx:bh/2, fill:it.color||('url(#'+gid+')')});
+    g.appendChild(rect);
+    var val = svgEl('text', {x:padL+bw+8, y:y+bh/2+4, fill:'#e9edf7', 'font-size':'12', 'font-family':'Georgia, serif'});
+    val.textContent = it.value;
+    g.appendChild(val);
+    svg.appendChild(g);
+  });
+  var defs = svgEl('defs', {});
+  var lg = svgEl('linearGradient', {id:gid, x1:'0', y1:'0', x2:'1', y2:'0'});
+  var st1 = svgEl('stop', {offset:'0%', 'stop-color':'#8a6a2c'});
+  var st2 = svgEl('stop', {offset:'100%', 'stop-color':'#e3b96b'});
+  lg.appendChild(st1); lg.appendChild(st2); defs.appendChild(lg);
+  svg.insertBefore(defs, svg.firstChild);
+  container.innerHTML = '';
+  container.appendChild(svg);
+}
+
+/* --- monthly combo --- */
+function monthlyChart(){
+  var container = document.getElementById('monthlyChart');
+  var M = DATA.months;
+  var w = 720, h = 300, pad = {l:46, r:18, t:20, b:36};
+  var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+  var maxPlays = 50;
+  var bw = iw/M.length*0.5;
+  var svg = svgEl('svg', {viewBox:'0 0 '+w+' '+h});
+  var defs = svgEl('defs', {});
+  var lg = svgEl('linearGradient', {id:'mBar', x1:'0', y1:'0', x2:'0', y2:'1'});
+  lg.appendChild(svgEl('stop', {offset:'0%', 'stop-color':'#e3b96b'}));
+  lg.appendChild(svgEl('stop', {offset:'100%', 'stop-color':'#7a5c24'}));
+  defs.appendChild(lg);
+  var ag = svgEl('linearGradient', {id:'mArea', x1:'0', y1:'0', x2:'0', y2:'1'});
+  ag.appendChild(svgEl('stop', {offset:'0%', 'stop-color':'rgba(79,214,195,.28)'}));
+  ag.appendChild(svgEl('stop', {offset:'100%', 'stop-color':'rgba(79,214,195,0)'}));
+  defs.appendChild(ag);
+  svg.appendChild(defs);
+  for (var g=0; g<=4; g++){
+    var gy = pad.t + ih - (g/4)*ih;
+    var line = svgEl('line', {x1:pad.l, y1:gy, x2:w-pad.r, y2:gy, stroke:'rgba(140,162,214,.12)', 'stroke-dasharray':'3 5'});
+    svg.appendChild(line);
+    var lab = svgEl('text', {x:pad.l-8, y:gy+4, 'text-anchor':'end', fill:'#5d687f', 'font-size':'10.5'});
+    lab.textContent = (g/4*maxPlays).toFixed(0);
+    svg.appendChild(lab);
+  }
+  var linePts = [];
+  M.forEach(function(m, i){
+    var x = pad.l + iw/M.length*(i+0.5);
+    var bh = (m.plays/maxPlays)*ih;
+    var y = pad.t + ih - bh;
+    var rect = svgEl('rect', {x:x-bw/2, y:y, width:bw, height:bh, rx:5, fill:'url(#mBar)'});
+    svg.appendChild(rect);
+    var val = svgEl('text', {x:x, y:y-6, 'text-anchor':'middle', fill:'#f4d79b', 'font-size':'11', 'font-family':'Georgia, serif'});
+    val.textContent = m.plays.toFixed(1);
+    svg.appendChild(val);
+    var mlab = svgEl('text', {x:x, y:pad.t+ih+18, 'text-anchor':'middle', fill:'#8b96ad', 'font-size':'11'});
+    mlab.textContent = m.m+'月';
+    svg.appendChild(mlab);
+    if (m.bm){
+      var star = svgEl('text', {x:x+bw/2+8, y:y+12, 'text-anchor':'middle', fill:'#f4d79b', 'font-size':'13'});
+      star.textContent = '★';
+      svg.appendChild(star);
+    }
+    linePts.push([x, pad.t + ih - (m.avg/5.0)*ih]);
+  });
+  var poly = '';
+  linePts.forEach(function(p, i){ poly += (i?' L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1); });
+  var path = svgEl('path', {d:poly, fill:'none', stroke:'#4fd6c3', 'stroke-width':'2.5', 'stroke-linecap':'round', 'stroke-linejoin':'round'});
+  path.style.strokeDasharray = '1200';
+  path.style.strokeDashoffset = '1200';
+  path.style.animation = 'dash 1.6s .5s cubic-bezier(.4,0,.2,1) forwards';
+  svg.appendChild(path);
+  linePts.forEach(function(p){
+    var c = svgEl('circle', {cx:p[0], cy:p[1], r:3.5, fill:'#4fd6c3'});
+    svg.appendChild(c);
+  });
+  container.innerHTML = '';
+  container.appendChild(svg);
+}
+
+/* --- weekly area --- */
+function weeklyChart(){
+  var container = document.getElementById('weeklyChart');
+  var W = DATA.weeks;
+  var w = 720, h = 300, pad = {l:46, r:18, t:20, b:34};
+  var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+  var maxV = 12;
+  var x0 = 1, x1 = 26;
+  var px = function(ww){ return pad.l + ((ww-x0)/(x1-x0))*iw; };
+  var py = function(v){ return pad.t + ih - (v/maxV)*ih; };
+  var svg = svgEl('svg', {viewBox:'0 0 '+w+' '+h});
+  var defs = svgEl('defs', {});
+  var lg = svgEl('linearGradient', {id:'wkArea', x1:'0', y1:'0', x2:'0', y2:'1'});
+  lg.appendChild(svgEl('stop', {offset:'0%', 'stop-color':'rgba(227,185,107,.30)'}));
+  lg.appendChild(svgEl('stop', {offset:'100%', 'stop-color':'rgba(227,185,107,0)'}));
+  defs.appendChild(lg);
+  svg.appendChild(defs);
+  for (var g=0; g<=4; g++){
+    var gy = pad.t + (g/4)*ih;
+    svg.appendChild(svgEl('line', {x1:pad.l, y1:gy, x2:w-pad.r, y2:gy, stroke:'rgba(140,162,214,.12)', 'stroke-dasharray':'3 5'}));
+    var lab = svgEl('text', {x:pad.l-8, y:gy+4, 'text-anchor':'end', fill:'#5d687f', 'font-size':'10.5'});
+    lab.textContent = (maxV - g/4*maxV).toFixed(0);
+    svg.appendChild(lab);
+  }
+  var pts = W.map(function(wk){ return [px(wk.w), py(wk.plays)]; });
+  var lineStr = pts.map(function(p, i){ return (i?' L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1); }).join('');
+  var areaPath = lineStr + ' L'+pts[pts.length-1][0].toFixed(1)+' '+(pad.t+ih)+' L'+pts[0][0].toFixed(1)+' '+(pad.t+ih)+' Z';
+  svg.appendChild(svgEl('path', {d:areaPath, fill:'url(#wkArea)'}));
+  var line = svgEl('path', {d:lineStr, fill:'none', stroke:'#e3b96b', 'stroke-width':'2.5', 'stroke-linecap':'round', 'stroke-linejoin':'round'});
+  line.style.strokeDasharray = '1600';
+  line.style.strokeDashoffset = '1600';
+  line.style.animation = 'dash 1.8s .4s cubic-bezier(.4,0,.2,1) forwards';
+  svg.appendChild(line);
+  pts.forEach(function(p){
+    svg.appendChild(svgEl('circle', {cx:p[0], cy:p[1], r:3.5, fill:'#f4d79b'}));
+  });
+  var labels = [1, 12, 17, 22, 26];
+  W.forEach(function(wk){
+    if (labels.indexOf(wk.w) >= 0){
+      var tl = svgEl('text', {x:px(wk.w), y:pad.t+ih+18, 'text-anchor':'middle', fill:'#8b96ad', 'font-size':'10.5'});
+      tl.textContent = 'W'+wk.w+' · '+wk.label;
+      svg.appendChild(tl);
+    }
+  });
+  container.innerHTML = '';
+  container.appendChild(svg);
+}
+
+/* --- donut --- */
+function donut(container, items, centerLabel){
+  var w = 460, h = 300, cx = w/2, cy = h/2 - 6, r = 96;
+  var total = items.reduce(function(s, it){ return s+it.value; }, 0);
+  var svg = svgEl('svg', {viewBox:'0 0 '+w+' '+h});
+  var colors = ['#e3b96b', '#4fd6c3', '#8ba7ff', '#ff9d9d', '#6b7890', '#f4d79b'];
+  var acc = -Math.PI/2;
+  items.forEach(function(it, i){
+    var frac = it.value/total;
+    var a0 = acc, a1 = acc + frac*Math.PI*2;
+    acc = a1;
+    var large = (a1-a0) > Math.PI ? 1 : 0;
+    var x0 = cx + r*Math.cos(a0), y0 = cy + r*Math.sin(a0);
+    var x1 = cx + r*Math.cos(a1), y1 = cy + r*Math.sin(a1);
+    var path = svgEl('path', {d:'M'+x0+' '+y0+' A'+r+' '+r+' 0 '+large+' 1 '+x1+' '+y1, fill:'none', stroke:colors[i%colors.length], 'stroke-width':'26'});
+    path.style.strokeDasharray = (frac*2000);
+    path.style.strokeDashoffset = (frac*2000);
+    path.style.animation = 'dashArc 1.2s '+(i*0.12)+'s cubic-bezier(.4,0,.2,1) forwards';
+    svg.appendChild(path);
+    var mx = cx + (r+20)*Math.cos((a0+a1)/2), my = cy + (r+20)*Math.sin((a0+a1)/2);
+    var tl = svgEl('text', {x:mx, y:my, 'text-anchor':'middle', fill:'#cfd8ea', 'font-size':'11'});
+    tl.textContent = it.name+' '+it.value;
+    svg.appendChild(tl);
+  });
+  var c1 = svgEl('text', {x:cx, y:cy-6, 'text-anchor':'middle', fill:'#f4d79b', 'font-size':'30', 'font-family':'Georgia, serif'});
+  c1.textContent = centerLabel;
+  svg.appendChild(c1);
+  var c2 = svgEl('text', {x:cx, y:cy+20, 'text-anchor':'middle', fill:'#8b96ad', 'font-size':'11'});
+  c2.textContent = '作品总数';
+  svg.appendChild(c2);
+  container.innerHTML = '';
+  container.appendChild(svg);
+}
+
+/* --- radar --- */
+function radarChart(){
+  var container = document.getElementById('radarChart');
+  var anchors = DATA.anchors.slice(0, 4);
+  var axes = ['台词','表情','动作','情绪','妆造','脚本','意愿','配合','推动'];
+  var w = 640, h = 380, cx = w/2, cy = h/2 + 8, R = 132;
+  var svg = svgEl('svg', {viewBox:'0 0 '+w+' '+h});
+  var colors = ['#e3b96b', '#4fd6c3', '#8ba7ff', '#ff9d9d'];
+  var n = axes.length;
+  function pt(ai, v){
+    var ang = -Math.PI/2 + ai*(Math.PI*2/n);
+    return [cx + R*(v/5)*Math.cos(ang), cy + R*(v/5)*Math.sin(ang)];
+  }
+  for (var ring=1; ring<=5; ring++){
+    var pts = [];
+    for (var i=0; i<n; i++){
+      var p = pt(i, ring);
+      pts.push(p[0].toFixed(1)+','+p[1].toFixed(1));
+    }
+    svg.appendChild(svgEl('polygon', {points:pts.join(' '), fill:'none', stroke:'rgba(140,162,214,'+(ring===5?0.35:0.14)+')', 'stroke-width':'1'}));
+  }
+  for (var i=0; i<n; i++){
+    var ang = -Math.PI/2 + i*(Math.PI*2/n);
+    var ep = [cx + R*Math.cos(ang), cy + R*Math.sin(ang)];
+    svg.appendChild(svgEl('line', {x1:cx, y1:cy, x2:ep[0], y2:ep[1], stroke:'rgba(140,162,214,.18)'}));
+    var lx = cx + (R+24)*Math.cos(ang), ly = cy + (R+24)*Math.sin(ang);
+    var lab = svgEl('text', {x:lx, y:ly, 'text-anchor':'middle', fill:'#aab4cc', 'font-size':'12', 'dominant-baseline':'middle'});
+    lab.textContent = axes[i];
+    svg.appendChild(lab);
+  }
+  anchors.forEach(function(a, ai){
+    var pts = [];
+    for (var i=0; i<n; i++){
+      var p = pt(i, a.scores[i]);
+      pts.push(p[0].toFixed(1)+','+p[1].toFixed(1));
+    }
+    svg.appendChild(svgEl('polygon', {points:pts.join(' '), fill:colors[ai], 'fill-opacity':'0.10', stroke:colors[ai], 'stroke-width':'2'}));
+    var name = svgEl('text', {x:cx+R*Math.cos(-Math.PI/2+0.4)+ (ai%2? 26:-110), y:cy+R*Math.sin(-Math.PI/2+0.4)+ (ai<2? 6: 26), fill:colors[ai], 'font-size':'12.5'});
+    name.textContent = a.name+' · '+a.total.toFixed(1)+'分';
+    svg.appendChild(name);
+  });
+  container.innerHTML = '';
+  container.appendChild(svg);
+}
+
+/* =========================================================
+   BUILD
+========================================================= */
+function fmt(n){
+  if (n >= 10000) return (n/10000).toFixed(1)+'w';
+  if (n >= 1000) return (n/1000).toFixed(1)+'k';
+  return String(n);
+}
+
+function renderBenchmarkKpis(){
+  var wrap = document.getElementById('benchmarkKpis');
+  var html = '';
+  DATA.benchmarks.forEach(function(b, i){
+    html += '<div class="card kpi gold" style="--i:'+i+'"><div class="bar"></div>' +
+      '<div class="v">'+(b.plays/10000).toFixed(1)+'<small>万</small></div>' +
+      '<div class="k">'+b.loupan+' · '+b.anchor+'</div>' +
+      '<div class="tip" style="margin-top:6px">'+b.district+' · 转发 '+b.fwd+' · 投流 '+b.invest+'</div></div>';
+  });
+  wrap.innerHTML = html;
+}
+
+function renderPortfolio(filter){
+  var grid = document.getElementById('pfGrid');
+  var list = DATA.videos.filter(function(v){
+    return filter === 'all' || v.cat === filter;
+  });
+  var html = '';
+  list.forEach(function(v, i){
+    var playTxt = v.plays > 10000 ? (v.plays/10000).toFixed(1)+'万播放' : v.plays+'播放';
+    var m = v.link && v.link.match(/sph\/(\w+)/);
+    var vid = m ? m[1] : v.loupan;
+    var saved = localStorage.getItem('cover_'+vid);
+    var cover = saved || (m ? 'assets/'+m[1]+'.jpg' : (v.cover || null));
+    var frame = cover
+      ? '<div class="thumb thumb-frame-img" data-vid="'+vid+'">'
+        + '<img class="thumb-img" src="'+cover+'" loading="lazy" alt="'+v.loupan+'" onerror="this.parentNode.classList.add(\'img-fail\')">'
+        + '<span class="varea">'+v.district+'</span>'
+        + '<div class="vplay-badge"><span class="dot"></span>'+playTxt+'</div>'
+        + '<div class="upload-hint">点击替换封面</div>'
+        + '<input type="file" accept="image/*">'
+        + '</div>'
+      : '<div class="thumb thumb-frame" data-vid="'+vid+'">'
+        + '<span class="varea">'+v.district+'</span>'
+        + '<div class="vname"><div class="vname-zh">'+v.loupan+'</div><div class="vname-en">VIDEO WORK</div></div>'
+        + '<div class="vplay-badge"><span class="dot"></span>'+playTxt+'</div>'
+        + '<div class="upload-hint">点击上传封面</div>'
+        + '<input type="file" accept="image/*">'
+        + '</div>';
+    html += '<a class="work-thumb" style="--i:'+(i%9)+'" href="'+v.link+'" target="_blank" rel="noopener">'
+      + frame
+      + '<div class="thumb-info"><span class="date">'+v.date+'</span><span class="play">▶ 跳转视频号</span></div>'
+      + '</a>';
+  });
+  grid.innerHTML = html || '<p class="tip">该分类暂无上榜作品</p>';
+  // bind upload handlers
+  grid.querySelectorAll('.thumb').forEach(function(thumb){
+    var vid = thumb.dataset.vid;
+    var input = thumb.querySelector('input[type=file]');
+    var img = thumb.querySelector('.thumb-img');
+    thumb.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      input.click();
+    });
+    input.addEventListener('change', function(e){
+      var file = e.target.files[0];
+      if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        var dataUrl = ev.target.result;
+        try { localStorage.setItem('cover_'+vid, dataUrl); } catch(err) { console.warn('Storage full:', err); }
+        if(img){
+          img.src = dataUrl;
+          thumb.classList.remove('img-fail');
+          img.style.display = 'block';
+        } else {
+          // create img for placeholder frames
+          thumb.classList.add('thumb-frame-img');
+          thumb.classList.remove('thumb-frame');
+          var newImg = document.createElement('img');
+          newImg.className = 'thumb-img';
+          newImg.src = dataUrl;
+          var vname = thumb.querySelector('.vname');
+          if(vname) vname.remove();
+          thumb.insertBefore(newImg, thumb.firstChild);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+}
+
+function initStaticUpload(){
+  document.querySelectorAll('img[data-upload]').forEach(function(img){
+    var key = img.getAttribute('data-upload');
+    try { var saved = localStorage.getItem('upload_'+key); if(saved){ img.src = saved; } } catch(e){}
+    var wrap = img.parentElement;
+    if(!wrap) return;
+    if(!wrap.querySelector('.upl-hint')){
+      var hint = document.createElement('span');
+      hint.className = 'upl-hint';
+      hint.textContent = '点击替换图片';
+      wrap.appendChild(hint);
+    }
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.style.display = 'none';
+    wrap.appendChild(input);
+    img.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      input.click();
+    });
+    input.addEventListener('change', function(e){
+      var file = e.target.files[0];
+      if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        var dataUrl = ev.target.result;
+        try { localStorage.setItem('upload_'+key, dataUrl); } catch(err){ console.warn('Storage full:', err); }
+        img.src = dataUrl;
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+}
+
+function renderScripts(){
+  var wrap = document.getElementById('scriptCards');
+  var html = '';
+  DATA.scripts.forEach(function(s, i){
+    html += '<div class="card insight" style="--i:'+i+'">' +
+      '<div class="no">SCRIPT 0'+(i+1)+'</div>' +
+      '<h3>'+s.name+'</h3><p>'+s.desc+'</p>' +
+      '<p style="margin-top:10px"><a class="play" href="'+s.url+'" target="_blank" rel="noopener">打开脚本库</a></p></div>';
+  });
+  wrap.innerHTML = html;
+}
+
+function renderAiStrip(){
+  var wrap = document.getElementById('aiStrip');
+  var html = '';
+  DATA.aiTop.forEach(function(v, i){
+    var key = 'aistrip_' + i;
+    var saved = null;
+    try { saved = localStorage.getItem('upload_'+key); } catch(e){}
+    var cover = saved || v.cover;
+    html += '<div class="ai-item" data-up="'+key+'">'
+      + '<img src="'+cover+'" alt="'+v.loupan+'" loading="lazy">'
+      + '<div class="upload-hint">点击替换</div>'
+      + '<input type="file" accept="image/*" style="display:none">'
+      + '<div class="cap">'+v.loupan+'<div class="p">播放 '+fmt(v.plays)+' · 转发 '+fmt(v.fwd)+'</div></div></div>';
+  });
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('.ai-item').forEach(function(item){
+    var key = item.getAttribute('data-up');
+    var img = item.querySelector('img');
+    var input = item.querySelector('input[type=file]');
+    img.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      input.click();
+    });
+    input.addEventListener('change', function(e){
+      var file = e.target.files[0];
+      if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        var dataUrl = ev.target.result;
+        try { localStorage.setItem('upload_'+key, dataUrl); } catch(err){ console.warn('Storage full:', err); }
+        img.src = dataUrl;
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+var currentFilter = 'all';
+function renderCharts(){
+  monthlyChart(); weeklyChart();
+  donut(document.getElementById('catDonut'), [
+    {name:'超级聚焦', value:33}, {name:'剪辑切片', value:14},
+    {name:'AI切片', value:10}, {name:'创造营', value:7}, {name:'其他', value:2}
+  ], '66');
+  hBars(document.getElementById('levelChart'), [
+    {name:'<1w', value:27}, {name:'1-3w', value:18}, {name:'5-10w', value:10},
+    {name:'3-5w', value:10}, {name:'10w+', value:1}
+  ]);
+  hBars(document.getElementById('districtChart'), DATA.districts);
+  radarChart();
+  hBars(document.getElementById('anchorRank'), DATA.anchors.slice(0, 8).map(function(a){return {name:a.name, value:a.total};}), {padL: 78});
+  renderBenchmarkKpis();
+  renderPortfolio(currentFilter);
+  renderScripts();
+  renderAiStrip();
+}
+var tabs = document.querySelectorAll('.tab');
+function activateTab(id){
+  tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.tab === id); });
+  var panels = document.querySelectorAll('.panel');
+  panels.forEach(function(p){
+    if (p.id === 'panel-'+id){
+      p.classList.remove('active');
+      void p.offsetWidth;
+      p.classList.add('active');
+    } else {
+      p.classList.remove('active');
+    }
+  });
+  renderCharts();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+tabs.forEach(function(t){
+  t.addEventListener('click', function(){ activateTab(t.dataset.tab); });
+});
+
+/* portfolio chips */
+var chips = document.querySelectorAll('#pfChips .chip');
+chips.forEach(function(c){
+  c.addEventListener('click', function(){
+    chips.forEach(function(x){ x.classList.remove('active'); });
+    c.classList.add('active');
+    currentFilter = c.dataset.f;
+    renderPortfolio(currentFilter);
+  });
+});
+
+// reset all custom covers
+var resetBtn = document.getElementById('resetCovers');
+if(resetBtn){
+  resetBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(!confirm('确定要重置所有自定义封面吗？')) return;
+    Object.keys(localStorage).forEach(function(k){
+      if(k.indexOf('cover_') === 0) localStorage.removeItem(k);
+    });
+    renderPortfolio(currentFilter);
+  });
+}
+
+/* scroll progress + topbar */
+var prog = document.getElementById('scrollProg');
+var topbar = document.getElementById('topbar');
+window.addEventListener('scroll', function(){
+  var st = document.documentElement.scrollTop;
+  var max = document.documentElement.scrollHeight - window.innerHeight;
+  prog.style.width = (max > 0 ? (st/max*100) : 0)+'%';
+  topbar.classList.toggle('scrolled', st > 10);
+});
+
+/* =========================================================
+   PARTICLE SYSTEM (enhanced mouse-following)
+========================================================= */
+var canvas = document.getElementById('particleCanvas');
+var ctx = canvas.getContext('2d');
+var W, H, DPR;
+var mouse = {x:-9999, y:-9999, px:-9999, py:-9999, active:false, vx:0, vy:0, speed:0};
+var parts = [];
+var sparks = [];      /* short-lived particles spawned at mouse */
+var trail = [];       /* mouse position history for trail */
+var ripples = [];
+var burstParts = [];  /* click burst particles */
+var PCOLORS = ['#e3b96b', '#4fd6c3', '#8ba7ff', '#f4d79b', '#ffffff', '#c9a0ff'];
+var hoverTarget = null;
+
+function resizeCanvas(){
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = W*DPR; canvas.height = H*DPR;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+function partCount(){
+  return Math.max(90, Math.min(180, Math.round(W*H/11000)));
+}
+function initParticles(){
+  parts.length = 0;
+  var n = partCount();
+  for (var i=0; i<n; i++){
+    parts.push({
+      x: Math.random()*W, y: Math.random()*H,
+      vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5,
+      r: Math.random()*2.1+0.7,
+      c: PCOLORS[(Math.random()*PCOLORS.length)|0],
+      a: Math.random()*0.45+0.22,
+      tw: Math.random()*Math.PI*2,
+      baseA: 0
+    });
+    parts[parts.length-1].baseA = parts[parts.length-1].a;
+  }
+}
+
+/* global mouse tracking on entire document */
+document.addEventListener('mousemove', function(e){
+  mouse.px = mouse.x; mouse.py = mouse.y;
+  mouse.x = e.clientX; mouse.y = e.clientY;
+  mouse.vx = mouse.x - mouse.px;
+  mouse.vy = mouse.y - mouse.py;
+  mouse.speed = Math.sqrt(mouse.vx*mouse.vx + mouse.vy*mouse.vy);
+  mouse.active = true;
+
+  /* trail history (keep last 15 positions) */
+  trail.push({x: mouse.x, y: mouse.y, life: 1});
+  if (trail.length > 15) trail.shift();
+
+  /* spawn sparks at mouse position proportional to speed */
+  var spawn = Math.min(4, Math.ceil(mouse.speed / 6));
+  for (var s=0; s<spawn; s++){
+    sparks.push({
+      x: mouse.x + (Math.random()-0.5)*16,
+      y: mouse.y + (Math.random()-0.5)*16,
+      vx: (Math.random()-0.5)*3 + mouse.vx*0.1,
+      vy: (Math.random()-0.5)*3 + mouse.vy*0.1,
+      r: Math.random()*1.8+0.6,
+      c: PCOLORS[(Math.random()*PCOLORS.length)|0],
+      a: 0.9,
+      life: 1
+    });
+  }
+
+  /* detect hover on interactive elements */
+  var el = e.target;
+  var isInteractive = el && (el.closest('.card') || el.closest('.tab') || el.closest('.chip') || el.closest('.pf') || el.closest('a') || el.closest('button'));
+  hoverTarget = isInteractive ? el : null;
+  if (isInteractive){
+    /* spawn golden sparkles on interactive hover */
+    for (var g=0; g<2; g++){
+      sparks.push({
+        x: mouse.x + (Math.random()-0.5)*30,
+        y: mouse.y + (Math.random()-0.5)*30,
+        vx: (Math.random()-0.5)*2,
+        vy: (Math.random()-0.5)*2 - 0.5,
+        r: Math.random()*2+0.8,
+        c: '#f4d79b',
+        a: 1,
+        life: 1
+      });
+    }
+  }
+});
+
+document.addEventListener('pointerdown', function(e){
+  /* burst of particles on click */
+  for (var i=0; i<20; i++){
+    var ang = (i/20)*Math.PI*2;
+    var spd = Math.random()*4+2;
+    burstParts.push({
+      x: e.clientX, y: e.clientY,
+      vx: Math.cos(ang)*spd, vy: Math.sin(ang)*spd,
+      r: Math.random()*2.5+1,
+      c: PCOLORS[(Math.random()*PCOLORS.length)|0],
+      a: 1, life: 1
+    });
+  }
+  ripples.push({x: e.clientX, y: e.clientY, r: 0, a: 0.6});
+  ripples.push({x: e.clientX, y: e.clientY, r: 0, a: 0.35, delay: 8});
+});
+
+window.addEventListener('pointerleave', function(){ mouse.active = false; });
+
+function drawParticles(){
+  ctx.clearRect(0, 0, W, H);
+  var LINK = 140;
+  var i, j, p, q, dx, dy, d2, d;
+
+  /* --- ambient particles --- */
+  for (i=0; i<parts.length; i++){
+    p = parts[i];
+    p.tw += 0.02;
+    p.x += p.vx + Math.sin(p.tw)*0.14;
+    p.y += p.vy + Math.cos(p.tw*0.7)*0.14;
+
+    /* mouse interaction: magnetic attraction + repulsion ring */
+    if (mouse.active){
+      dx = p.x - mouse.x; dy = p.y - mouse.y;
+      d2 = dx*dx + dy*dy;
+      if (d2 < 40000 && d2 > 0.01){
+        d = Math.sqrt(d2);
+        if (d < 60){
+          /* close: push away strongly */
+          var push = (60-d)/60;
+          p.x += dx/d*push*3;
+          p.y += dy/d*push*3;
+          p.a = Math.min(1, p.baseA + push*0.5);
+        } else {
+          /* medium: gentle attraction */
+          var pull = (200-d)/200;
+          p.x -= dx/d*pull*1.2;
+          p.y -= dy/d*pull*1.2;
+          p.a = Math.min(1, p.baseA + pull*0.3);
+        }
+      }
+    } else {
+      p.a = p.a + (p.baseA - p.a)*0.05;
+    }
+
+    if (p.x < -24) p.x = W+24; if (p.x > W+24) p.x = -24;
+    if (p.y < -24) p.y = H+24; if (p.y > H+24) p.y = -24;
+
+    ctx.globalAlpha = p.a;
+    ctx.fillStyle = p.c;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+
+    /* glow for larger particles near mouse */
+    if (mouse.active && p.r > 1.5){
+      dx = p.x - mouse.x; dy = p.y - mouse.y;
+      d2 = dx*dx + dy*dy;
+      if (d2 < 22500){
+        ctx.globalAlpha = 0.15;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r*3, 0, Math.PI*2); ctx.fill();
+      }
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  /* --- connections between ambient particles --- */
+  ctx.lineWidth = 1;
+  for (i=0; i<parts.length; i++){
+    for (j=i+1; j<parts.length; j++){
+      p = parts[i]; q = parts[j];
+      dx = p.x-q.x; dy = p.y-q.y;
+      d2 = dx*dx + dy*dy;
+      if (d2 < LINK*LINK){
+        ctx.strokeStyle = 'rgba(150,190,255,'+((1-Math.sqrt(d2)/LINK)*0.13).toFixed(3)+')';
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+      }
+    }
+  }
+
+  /* --- connections from mouse to nearby particles --- */
+  if (mouse.active){
+    for (i=0; i<parts.length; i++){
+      p = parts[i];
+      dx = p.x - mouse.x; dy = p.y - mouse.y;
+      d2 = dx*dx + dy*dy;
+      if (d2 < 22500){
+        d = Math.sqrt(d2);
+        var alpha = (1 - d/150) * 0.35;
+        ctx.strokeStyle = 'rgba(227,185,107,'+alpha.toFixed(3)+')';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(mouse.x, mouse.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+      }
+    }
+  }
+
+  /* --- mouse trail --- */
+  for (i=0; i<trail.length; i++){
+    var t = trail[i];
+    t.life -= 0.06;
+    if (t.life > 0){
+      ctx.globalAlpha = t.life * 0.5;
+      ctx.fillStyle = '#e3b96b';
+      ctx.beginPath(); ctx.arc(t.x, t.y, t.life*4+1, 0, Math.PI*2); ctx.fill();
+    }
+  }
+  trail = trail.filter(function(t){ return t.life > 0; });
+
+  /* --- sparks (spawned at mouse) --- */
+  for (i=sparks.length-1; i>=0; i--){
+    var sp = sparks[i];
+    sp.x += sp.vx; sp.y += sp.vy;
+    sp.vx *= 0.96; sp.vy *= 0.96;
+    sp.vy += 0.02; /* slight gravity */
+    sp.life -= 0.025;
+    sp.a = sp.life * 0.9;
+    if (sp.life <= 0){ sparks.splice(i, 1); continue; }
+    ctx.globalAlpha = sp.a;
+    ctx.fillStyle = sp.c;
+    ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2); ctx.fill();
+    /* sparkle glow */
+    ctx.globalAlpha = sp.a * 0.2;
+    ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r*3, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  /* --- burst particles (from click) --- */
+  for (i=burstParts.length-1; i>=0; i--){
+    var bp = burstParts[i];
+    bp.x += bp.vx; bp.y += bp.vy;
+    bp.vx *= 0.95; bp.vy *= 0.95;
+    bp.life -= 0.02;
+    bp.a = bp.life;
+    if (bp.life <= 0){ burstParts.splice(i, 1); continue; }
+    ctx.globalAlpha = bp.a;
+    ctx.fillStyle = bp.c;
+    ctx.beginPath(); ctx.arc(bp.x, bp.y, bp.r, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  /* --- mouse glow --- */
+  if (mouse.active){
+    var mg = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 160);
+    mg.addColorStop(0, 'rgba(227,185,107,0.15)');
+    mg.addColorStop(0.4, 'rgba(227,185,107,0.05)');
+    mg.addColorStop(1, 'rgba(227,185,107,0)');
+    ctx.fillStyle = mg;
+    ctx.fillRect(mouse.x-160, mouse.y-160, 320, 320);
+
+    /* inner bright core */
+    var cg = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 30);
+    cg.addColorStop(0, 'rgba(255,255,255,0.25)');
+    cg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = cg;
+    ctx.fillRect(mouse.x-30, mouse.y-30, 60, 60);
+
+    /* golden ring around mouse */
+    ctx.strokeStyle = 'rgba(227,185,107,0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 40+Math.sin(Date.now()*0.005)*3, 0, Math.PI*2); ctx.stroke();
+  }
+
+  /* hover effect on interactive elements */
+  if (hoverTarget && mouse.active){
+    var rect = hoverTarget.closest('.card, .tab, .chip, .pf, a, button');
+    if (rect){
+      var r = rect.getBoundingClientRect();
+      /* golden border glow */
+      ctx.strokeStyle = 'rgba(227,185,107,0.15)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(r.left, r.top, r.width, r.height);
+    }
+  }
+
+  /* --- ripples --- */
+  for (i=ripples.length-1; i>=0; i--){
+    var rp = ripples[i];
+    if (rp.delay && rp.delay > 0){ rp.delay--; continue; }
+    rp.r += 3; rp.a -= 0.012;
+    if (rp.a <= 0){ ripples.splice(i, 1); continue; }
+    ctx.strokeStyle = 'rgba(227,185,107,'+rp.a.toFixed(3)+')';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI*2); ctx.stroke();
+    /* secondary ring */
+    if (rp.r > 10){
+      ctx.strokeStyle = 'rgba(79,214,195,'+(rp.a*0.5).toFixed(3)+')';
+      ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.r*0.6, 0, Math.PI*2); ctx.stroke();
+    }
+  }
+
+  requestAnimationFrame(drawParticles);
+}
+window.addEventListener('resize', function(){ resizeCanvas(); initParticles(); });
+
+/* =========================================================
+   INIT
+========================================================= */
+resizeCanvas(); initParticles(); drawParticles();
+renderCharts();
+initStaticUpload();
+</script>
+</body>
+</html>
