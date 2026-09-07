@@ -148,28 +148,24 @@ main{position:relative; z-index:2; max-width:1280px; margin:0 auto; padding:104p
 }
 .chip:hover{color:var(--ink); border-color:var(--line2)}
 .chip.active{color:#141008; background:linear-gradient(140deg,#f4d79b,#d9a94f); border-color:transparent; font-weight:600}
-.pf-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-top:20px}
-.work-thumb{background:var(--card); border:1px solid var(--border); border-radius:8px; overflow:hidden; transition:all .3s; cursor:pointer; text-decoration:none; color:inherit; display:block}
-.work-thumb:hover{border-color:var(--gold); transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.work-thumb .thumb{position:relative; aspect-ratio:16/9; overflow:hidden; background:linear-gradient(135deg,#1a2028 0%,#0d1116 60%,#12171d 100%)}
-.work-thumb .thumb::before{content:''; position:absolute; inset:0; z-index:0; background:radial-gradient(circle at 78% 22%,rgba(227,185,107,.18),transparent 45%),radial-gradient(circle at 20% 80%,rgba(227,185,107,.08),transparent 50%)}
-.work-thumb .thumb::after{content:''; position:absolute; top:0; right:0; width:60px; height:60px; z-index:0; background:linear-gradient(225deg,rgba(227,185,107,.25),transparent 70%); clip-path:polygon(100% 0,0 0,100% 100%)}
-.work-thumb .thumb-img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; transition:transform .5s ease,filter .3s ease; filter:brightness(.92)}
-.work-thumb:hover .thumb-img{transform:scale(1.05); filter:brightness(1)}
-.work-thumb .varea{position:absolute; top:10px; left:10px; z-index:1; font-size:10px; color:#f0d9a0; letter-spacing:1px; padding:3px 8px; background:rgba(0,0,0,.6); border-radius:3px; border:1px solid rgba(227,185,107,.4)}
-.work-thumb .vname{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1; text-align:center; width:90%}
-.work-thumb .vname-zh{font-size:20px; font-weight:800; color:#f0d9a0; letter-spacing:1px; line-height:1.2; text-shadow:0 2px 12px rgba(0,0,0,.5),0 0 24px rgba(227,185,107,.3)}
-.work-thumb .vname-en{font-size:9px; color:rgba(227,185,107,.5); letter-spacing:3px; margin-top:8px; text-transform:uppercase}
-.work-thumb .vplay-badge{position:absolute; bottom:10px; right:10px; z-index:1; display:flex; align-items:center; gap:5px; font-size:11px; color:var(--gold); font-weight:600; background:rgba(0,0,0,.6); padding:3px 8px; border-radius:4px}
-.work-thumb .vplay-badge .dot{width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 8px var(--gold); animation:pfPulse 1.6s ease-in-out infinite}
-.work-thumb .thumb-info{padding:10px 12px; font-size:12px; color:#6b7480; display:flex; justify-content:space-between; gap:8px}
+.pf-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:18px; margin-top:20px}
+.work-thumb{background:transparent; border:none; border-radius:14px; overflow:hidden; transition:all .3s; cursor:pointer; text-decoration:none; color:inherit; display:block}
+.work-thumb:hover{transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.work-thumb .thumb{position:relative; aspect-ratio:3/4; overflow:hidden; background:#0d1116; border-radius:14px}
+.work-thumb .thumb-img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; z-index:0; transition:filter .3s ease; filter:brightness(.96)}
+.work-thumb:hover .thumb-img{filter:brightness(1.05)}
+.work-thumb .thumb::before{content:''; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.72) 100%); pointer-events:none}
+.work-thumb .vplay-badge{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2; width:58px; height:58px; border-radius:50%; background:rgba(255,255,255,.18); border:2px solid rgba(255,255,255,.8); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px)}
+.work-thumb .vplay-badge::before{content:''; width:0; height:0; border-left:18px solid #fff; border-top:11px solid transparent; border-bottom:11px solid transparent; margin-left:4px}
+.work-thumb .thumb-bottom{position:absolute; bottom:0; left:0; right:0; z-index:2; padding:14px 14px 12px; display:flex; align-items:center; gap:10px}
+.work-thumb .thumb-avatar{width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,#e3b96b,#8a6a2c); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#1a1204}
+.work-thumb .thumb-title{flex:1; min-width:0; color:#fff; font-size:13px; font-weight:600; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:0 1px 6px rgba(0,0,0,.8)}
+.work-thumb .thumb-info{padding:10px 4px 0; font-size:11px; color:#6b7480; display:flex; justify-content:space-between; gap:8px}
 .work-thumb .thumb-info .play{color:var(--gold); font-weight:600}
 .work-thumb .thumb-info .date{color:#6b7480}
 .work-thumb .thumb-frame-img{background:#0d1116}
-.work-thumb .thumb-frame-img.img-fail{background:linear-gradient(135deg,#1a2028 0%,#0d1116 60%,#12171d 100%)}
-.work-thumb .thumb-frame-img.img-fail::after{content:'点击上传封面'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#f0d9a0; font-size:13px; z-index:1; border:2px dashed rgba(227,185,107,.3); margin:10px; border-radius:6px}
 .work-thumb .thumb{cursor:pointer}
-.work-thumb .thumb .upload-hint{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2; color:#f0d9a0; font-size:12px; text-align:center; opacity:0; transition:opacity .3s; pointer-events:none; background:rgba(0,0,0,.7); padding:8px 14px; border-radius:6px; border:1px solid rgba(227,185,107,.3)}
+.work-thumb .thumb .upload-hint{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:3; color:#f0d9a0; font-size:12px; text-align:center; opacity:0; transition:opacity .3s; pointer-events:none; background:rgba(0,0,0,.7); padding:8px 14px; border-radius:6px; border:1px solid rgba(227,185,107,.3)}
 .work-thumb:hover .thumb .upload-hint{opacity:1}
 .work-thumb .thumb input[type=file]{display:none}
 @keyframes pfPulse{0%,100%{opacity:.5}50%{opacity:1}}
@@ -1173,33 +1169,39 @@ function renderBenchmarkKpis(){
 function renderPortfolio(filter){
   var grid = document.getElementById('pfGrid');
   var list = DATA.videos.filter(function(v){
-    return filter === 'all' || v.cat === filter;
+    if (!(filter === 'all' || v.cat === filter)) return false;
+    // 跳过无封面的作品
+    var m = v.link && v.link.match(/sph\/(\w+)/);
+    var vid = m ? m[1] : v.loupan;
+    try { if(localStorage.getItem('cover_'+vid)) return true; } catch(e){}
+    if(m){
+      // 检查 assets 目录是否有对应封面图（通过同步 XMLHttpRequest 预检查，失败则跳过）
+      // 先按约定路径假设存在，加载失败的 onerror 会移除卡片
+      return true;
+    }
+    return !!v.cover;
   });
   var html = '';
   list.forEach(function(v, i){
     var playTxt = v.plays > 10000 ? (v.plays/10000).toFixed(1)+'万播放' : v.plays+'播放';
     var m = v.link && v.link.match(/sph\/(\w+)/);
     var vid = m ? m[1] : v.loupan;
-    var saved = localStorage.getItem('cover_'+vid);
+    try { var saved = localStorage.getItem('cover_'+vid); } catch(e){ var saved = null; }
     var cover = saved || (m ? 'assets/'+m[1]+'.jpg' : (v.cover || null));
-    var frame = cover
-      ? '<div class="thumb thumb-frame-img" data-vid="'+vid+'">'
-        + '<img class="thumb-img" src="'+cover+'" loading="lazy" alt="'+v.loupan+'" onerror="this.parentNode.classList.add(\'img-fail\')">'
-        + '<span class="varea">'+v.district+'</span>'
-        + '<div class="vplay-badge"><span class="dot"></span>'+playTxt+'</div>'
-        + '<div class="upload-hint">点击替换封面</div>'
-        + '<input type="file" accept="image/*">'
+    var anchorShort = (v.anchor || '').slice(0,1);
+    var frame = '<div class="thumb thumb-frame-img" data-vid="'+vid+'">'
+        + '<img class="thumb-img" src="'+cover+'" loading="lazy" alt="'+v.loupan+'" onerror="var a=this.closest(\'.work-thumb\');if(a)a.remove()">'
+        + '<div class="vplay-badge"></div>'
+        + '<div class="thumb-bottom">'
+        + '<div class="thumb-avatar">'+anchorShort+'</div>'
+        + '<div class="thumb-title">'+v.loupan+'</div>'
         + '</div>'
-      : '<div class="thumb thumb-frame" data-vid="'+vid+'">'
-        + '<span class="varea">'+v.district+'</span>'
-        + '<div class="vname"><div class="vname-zh">'+v.loupan+'</div><div class="vname-en">VIDEO WORK</div></div>'
-        + '<div class="vplay-badge"><span class="dot"></span>'+playTxt+'</div>'
-        + '<div class="upload-hint">点击上传封面</div>'
+        + '<div class="upload-hint">点击替换封面</div>'
         + '<input type="file" accept="image/*">'
         + '</div>';
     html += '<a class="work-thumb" style="--i:'+(i%9)+'" href="'+v.link+'" target="_blank" rel="noopener">'
       + frame
-      + '<div class="thumb-info"><span class="date">'+v.date+'</span><span class="play">▶ 跳转视频号</span></div>'
+      + '<div class="thumb-info"><span class="date">'+v.date+'</span><span class="play">'+playTxt+'</span></div>'
       + '</a>';
   });
   grid.innerHTML = html || '<p class="tip">该分类暂无上榜作品</p>';
