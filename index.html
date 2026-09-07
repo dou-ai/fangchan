@@ -149,12 +149,19 @@ main{position:relative; z-index:2; max-width:1280px; margin:0 auto; padding:104p
 .chip:hover{color:var(--ink); border-color:var(--line2)}
 .chip.active{color:#141008; background:linear-gradient(140deg,#f4d79b,#d9a94f); border-color:transparent; font-weight:600}
 .pf-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:18px; margin-top:20px}
-.work-thumb{background:transparent; border:none; border-radius:14px; overflow:hidden; transition:all .3s; cursor:pointer; text-decoration:none; color:inherit; display:block}
-.work-thumb:hover{transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.5)}
-.work-thumb:hover .thumb{border:2px solid rgba(227,185,107,.7); box-sizing:border-box}
+.work-wrap{position:relative; transition:transform .3s}
+.work-wrap:hover{transform:translateY(-3px)}
+.work-thumb{background:transparent; border:none; border-radius:14px; overflow:hidden; transition:box-shadow .3s; cursor:pointer; text-decoration:none; color:inherit; display:block}
+.work-thumb:hover{box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.work-thumb:hover .thumb{box-shadow:inset 0 0 0 2px rgba(227,185,107,.7)}
 .work-thumb:hover .thumb-img{filter:brightness(.7)}
 .work-thumb:hover .upload-hint{opacity:1}
 .work-thumb .thumb{position:relative; aspect-ratio:3/4; overflow:hidden; background:#0d1116; border-radius:14px}
+.pf-file-input{display:none}
+.pf-open-link{position:absolute; top:8px; right:8px; z-index:4; width:30px; height:30px; border-radius:50%; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.28); display:flex; align-items:center; justify-content:center; color:#fff; opacity:0; transition:opacity .3s; cursor:pointer}
+.work-wrap:hover .pf-open-link{opacity:1}
+.pf-open-link:hover{background:rgba(227,185,107,.92); color:#1a1204; border-color:rgba(227,185,107,.6)}
+.work-thumb .upload-hint{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:3; color:#fff; font-size:13px; font-weight:600; text-align:center; opacity:0; transition:opacity .3s; pointer-events:none; background:rgba(227,185,107,.95); color:#1a1204; padding:8px 18px; border-radius:999px; box-shadow:0 4px 16px rgba(0,0,0,.4)}
 .work-thumb .thumb-img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; z-index:0; transition:filter .3s ease; filter:brightness(.96)}
 .work-thumb:hover .thumb-img{filter:brightness(1.05)}
 .work-thumb .thumb::before{content:''; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.72) 100%); pointer-events:none}
@@ -168,9 +175,6 @@ main{position:relative; z-index:2; max-width:1280px; margin:0 auto; padding:104p
 .work-thumb .thumb-info .date{color:#6b7480}
 .work-thumb .thumb-frame-img{background:#0d1116}
 .work-thumb .thumb{cursor:pointer}
-.work-thumb .upload-hint{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:3; color:#fff; font-size:13px; font-weight:600; text-align:center; opacity:0; transition:opacity .3s; pointer-events:none; background:rgba(227,185,107,.95); color:#1a1204; padding:8px 18px; border-radius:999px; box-shadow:0 4px 16px rgba(0,0,0,.4)}
-.work-thumb:hover .upload-hint{opacity:1}
-.work-thumb .thumb input[type=file]{display:none}
 @keyframes pfPulse{0%,100%{opacity:.5}50%{opacity:1}}
 
 /* static image upload */
@@ -1192,46 +1196,38 @@ function renderPortfolio(filter){
     try { var saved = localStorage.getItem('cover_'+vid); } catch(e){ var saved = null; }
     var cover = saved || (m ? 'assets/'+m[1]+'.jpg' : (v.cover || null));
     var anchorShort = (v.anchor || '').slice(0,1);
-    var frame = '<div class="thumb thumb-frame-img" data-vid="'+vid+'">'
-        + '<img class="thumb-img" src="'+cover+'" loading="lazy" alt="'+v.loupan+'" onerror="var a=this.closest(\'.work-thumb\');if(a)a.remove()">'
+    var frame = '<div class="thumb thumb-frame-img">'
+        + '<img class="thumb-img" src="'+cover+'" loading="lazy" alt="'+v.loupan+'" onerror="var a=this.closest(\'.work-wrap\');if(a)a.remove()">'
         + '<div class="vplay-badge"></div>'
         + '<div class="thumb-bottom">'
         + '<div class="thumb-avatar">'+anchorShort+'</div>'
         + '<div class="thumb-title">'+v.loupan+'</div>'
         + '</div>'
         + '<div class="upload-hint">点击替换封面</div>'
-        + '<input type="file" accept="image/*">'
         + '</div>';
-    html += '<a class="work-thumb" style="--i:'+(i%9)+'" href="'+v.link+'" target="_blank" rel="noopener">'
+    html += '<div class="work-wrap" style="--i:'+(i%9)+'">'
+      + '<label class="work-thumb">'
+      + '<input type="file" accept="image/*" class="pf-file-input" data-vid="'+vid+'">'
       + frame
       + '<div class="thumb-info"><span class="date">'+v.date+'</span><span class="play">'+playTxt+'</span></div>'
-      + '</a>';
+      + '</label>'
+      + '<a class="pf-open-link" href="'+v.link+'" target="_blank" rel="noopener" title="在视频号打开">'
+      + '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>'
+      + '</a>'
+      + '</div>';
   });
   grid.innerHTML = html || '<p class="tip">该分类暂无上榜作品</p>';
-  // bind upload handlers — 整卡可点击替换封面
-  grid.querySelectorAll('.work-thumb').forEach(function(card){
-    var thumb = card.querySelector('.thumb');
-    if(!thumb) return;
-    var vid = thumb.dataset.vid;
-    var input = thumb.querySelector('input[type=file]');
-    var img = thumb.querySelector('.thumb-img');
-    card.addEventListener('click', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      input.click();
-    });
+  // 文件选择后的处理：上传由 <label> 原生触发文件选择器，无需 JS 模拟点击
+  grid.querySelectorAll('.pf-file-input').forEach(function(input){
     input.addEventListener('change', function(e){
       var file = e.target.files[0];
       if(!file) return;
       var reader = new FileReader();
       reader.onload = function(ev){
         var dataUrl = ev.target.result;
-        try { localStorage.setItem('cover_'+vid, dataUrl); } catch(err){ console.warn('Storage full:', err); }
-        if(img){
-          img.src = dataUrl;
-          thumb.classList.remove('img-fail');
-          img.style.display = 'block';
-        }
+        try { localStorage.setItem('cover_'+input.dataset.vid, dataUrl); } catch(err){ console.warn('Storage full:', err); }
+        var img = input.closest('.work-thumb').querySelector('.thumb-img');
+        if(img) img.src = dataUrl;
       };
       reader.readAsDataURL(file);
     });
